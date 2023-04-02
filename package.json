@@ -1,0 +1,21 @@
+{
+  "name": "primera-entrega",
+  "version": "1.0.0",
+  "main": "main.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JaviB10/Ejercicio-Javascript-1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JaviB10/Ejercicio-Javascript-1/issues"
+  },
+  "homepage": "https://github.com/JaviB10/Ejercicio-Javascript-1#readme",
+  "description": ""
+}
