@@ -32,20 +32,46 @@ export default class ProductManager {
 
             const products = await this.getProducts();
 
-            if (products.length === 0) {
+            const codeValidation = products.map(function (products) {
 
-                product.id = 1;
+                if (products.code === product.code) {
+
+                    return true
+
+                } else {
+
+                    return products;
+
+                }
+            
+            });
+
+            if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
+
+                console.log("Para que se valide el producto debe completar todos los campos");
+                return
+    
+            } else if (codeValidation) {
+    
+                console.log ("El codigo ingresado ya esta en uso");
+                return
 
             } else {
 
-                product.id = products[products.length - 1].id + 1;
+                if (products.length === 0) {
 
+                    product.id = 1;
+    
+                } else {
+    
+                    product.id = products[products.length - 1].id + 1;
+    
+                }
+    
+                await products.push(product);
+                await fs.promises.writeFile(path, JSON.stringify(products, null, "\t"));
             }
 
-            await products.push(product);
-
-            await fs.promises.writeFile(path, JSON.stringify(products, null, "\t"));
-        
             return product
             
         } catch (error) {

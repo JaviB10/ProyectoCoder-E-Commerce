@@ -4,15 +4,16 @@ const newProduct = new ProductManager();
 
 const testing = async () => {
 
+    
     //Se llama a la funcion getProducts, la cual debera mostrar por esta vez un array vacio.
     console.table(await newProduct.getProducts())
     //Se llama a la funcion addProducts, la cual añadira un nuevo producto al array.
     const product = {
         title: "Producto de prueba segundo",
         description: "Este es un producto de prueba segundo",
-        price: 300,
+        price: 200,
         thumbnail: "Sin imagen",
-        code: "abc13",
+        code: "abc123",
         stock: 50
     }
     await newProduct.addProducts(product);
