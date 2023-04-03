@@ -32,29 +32,17 @@ export default class ProductManager {
 
             const products = await this.getProducts();
 
-            const codeValidation = products.map(function (products) {
-
-                if (products.code === product.code) {
-
-                    return true
-
-                } else {
-
-                    return products;
-
-                }
-            
-            });
+            const codeValidation = products.find(products=>products.code===product.code);
 
             if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) {
 
                 console.log("Para que se valide el producto debe completar todos los campos");
-                return
+                return;
     
             } else if (codeValidation) {
     
                 console.log ("El codigo ingresado ya esta en uso");
-                return
+                return;
 
             } else {
 
@@ -96,7 +84,7 @@ export default class ProductManager {
 
             } else {
 
-                return products[productIndex]
+                return products[productIndex];
 
             }
         } catch (error) {
@@ -112,13 +100,21 @@ export default class ProductManager {
         try {
 
             const products = await this.getProducts();
-            const newProducts = products.filter( product => {
-                
-                return product.id !== idProduct;
+            const productFound = products.find(products=>products.id===idProduct)
+            if (productFound) {
 
-            });
-            
-            await fs.promises.writeFile(path, JSON.stringify(newProducts, null, '\t'));
+                const productDelete = products.filter( product => {
+                    return product.id !== idProduct;
+
+                });
+                await fs.promises.writeFile(path, JSON.stringify(productDelete, null, '\t'));
+
+            } else{
+
+                console.log(`El ID solicitado no ha sido encontrado`);
+                return;
+
+            }
             
         } catch (error) {
 
@@ -133,6 +129,13 @@ export default class ProductManager {
         try {
 
             const products = await this.getProducts();
+            const codeValidation = products.find(products=>products.code===product.code);
+            if (codeValidation) {
+
+                console.log ("El codigo ingresado ya esta en uso");
+                return;
+                
+            }
             const newProducts = products.map(function (element) {
 
                 if (element.id === idProduct) {
