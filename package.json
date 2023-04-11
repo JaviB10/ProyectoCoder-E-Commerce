@@ -17,5 +17,8 @@
     "url": "https://github.com/JaviB10/Ejercicio-Javascript-1/issues"
   },
   "homepage": "https://github.com/JaviB10/Ejercicio-Javascript-1#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
