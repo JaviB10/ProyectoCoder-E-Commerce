@@ -1,36 +1,29 @@
 import express from "express";
-import ProductManager from "./ProductManager.js";
+import routerProducts from "./routes/api/products.router.js";
+import routerViews from './routes/web/views.router.js'
+import handlebars from "express-handlebars";
+import __dirname from "./utils.js";
+import { Server } from "socket.io";
 
 const app = express();
+
 app.use(express.urlencoded({extended: true}))
+app.use(express.static(`${__dirname}/public`))
+app.use(express.json())
 
-const newProduct = new ProductManager();
+app.engine("handlebars", handlebars.engine())
+app.set("views", `${__dirname}/views`)
+app.set("view engine", "handlebars")
 
-app.get("/products", async (req, res) => {
+app.use(`/`, routerViews);
+app.use("/api/products", routerProducts);
 
-    const products = await newProduct.getProducts();  
-    const limit = Number(req.query.limit) || products.length;
-    const objetsLimit = products.slice(0, limit);
-    res.send(objetsLimit)
-
+const server = app.listen(8081, () => {
+    console.log("Listening on 8081")
 })
+const io = new Server(server);
+app.set('socketio', io);
 
-app.get("/products/:pid", async (req, res) => {
-
-    const products = await newProduct.getProducts(); 
-    const productID = Number(req.params.pid);
-    const product = products.find(products => products.id === productID);
-    if (product) {
-        res.send(product);
-    } else {
-        res.send({Error:"El producto no existe"})
-    }
-    
-
-})
-
-app.listen(8080, () => {
-
-    console.log("Listening")
-
+io.on('connection', socket =>{
+    console.log('Nuevo cliente conectado');
 })
