@@ -11,7 +11,12 @@ router.get("/", async (req,res) => {
 
 router.get("/realtimeproducts", async (req,res) => {
     const productos = await productManager.getProducts()
+    
     res.render("realTimeProducts", { "products" : productos});
+    const io = req.app.get('socketio');
+    io.on('connection', socket =>{
+        io.emit("showProducts", productos);
+    })
 });
 
 export default router;
