@@ -1,6 +1,6 @@
 <div>
     <h1>Productos</h1>
-    {{#each products}}
+    {{#each this.payload}}
         <ul>
             <li>title: {{this.title}}</li> 
             <li>description: {{this.description}}</li>
@@ -12,5 +12,12 @@
             <li>id: {{this._id}}</li>
         </ul>
     {{/each}}
+    {{#if this.hasPrevPage}}
+    <a href={{this.prevLink}}><button>Anterior</button></a>
+    {{/if}}
+
+    {{#if this.hasNextPage}}
+    <a href={{this.nextLink}}><button>Siguiente</button></a>
+    {{/if}}
 </div>
 

@@ -7,10 +7,8 @@ const productManager = new Products();
 
 router.get("/", async (req, res) => {
     try {
-        const products = await productManager.getAll();
-        const limit = Number(req.query.limit) || products.length;
-        const objetsLimit = products.slice(0, limit);
-        res.status(200).send({status: "success", payload: objetsLimit});  
+        const result = await productManager.getAll();
+        res.status(200).send({status: "success", payload: result});  
     } catch (error) {
         res.status(500).send({ error })
     }
