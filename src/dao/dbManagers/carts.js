@@ -30,6 +30,7 @@ export default class Carts {
         } else {
             cartFound.products.push({ product: productId, quantity: 1 });
         }
+
         await cartFound.save();
         return cartFound;
     }
@@ -37,14 +38,14 @@ export default class Carts {
     deleteProductToCart = async (cid, pid) => {
         const cart = await cartModel.findById(cid);
         const productIndex = cart.products.findIndex((item) => item.product.toString() === pid);
+
         if (productIndex !== -1) {
             cart.products.splice(productIndex, 1);
         } else {
-            console.log('No existe');
+            return false
         }
 
         await cart.save();
-
         return cart;
     }
 
@@ -53,21 +54,25 @@ export default class Carts {
         cart.products = [];
 
         await cart.save();
-
         return cart;
+    }
+
+    updateCart = async (id, product) =>{
+        const result = await cartModel.updateOne({_id:id}, product);
+        return result;
     }
 
     updateQuantityToCart = async (cid,pid,cantidad) =>{
         const cart = await cartModel.findById(cid);
         const productIndex = cart.products.findIndex((item) => item.product.toString() === pid);
+        
         if (productIndex !== -1) {
             cart.products[productIndex].quantity = cantidad.quantity;
         } else {
-            console.log('No existe');
+            return false
         }
 
         await cart.save();
-
         return cart;
     }
 }

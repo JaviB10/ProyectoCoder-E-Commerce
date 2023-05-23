@@ -1,26 +1,26 @@
 <div>
-    <h1>Productos</h1>
+
+    <h1>PRODUCTS</h1>
+
     {{#each this.payload}}
         <ul>
             <li>title: {{this.title}}</li> 
-            <li>description: {{this.description}}</li>
-            <li>code: {{this.code}}</li>
-            <li>price: {{this.price}}</li>
-            <li>status: {{this.status}}</li>
-            <li>stock: {{this.stock}}</li>
-            <li>category: {{this.category}}</li>
-            <li>thumbnail: {{this.thumbnail}}</li>
-            <li>id: {{this._id}}</li>
-            <button onclick="ver('{{this._id}}')">Ver producto</button>
+            <li>Price: {{this.price}}</li>
+            <li>Status: {{this.status}}</li>
+            <li>Stock: {{this.stock}}</li>
+            <li>Category: {{this.category}}</li>
+            <button onclick="ver('{{this._id}}')">View Product</button>
         </ul>
     {{/each}}
+
     {{#if this.hasPrevPage}}
-    <a href={{this.prevLink}}><button>Anterior</button></a>
+        <a href={{this.prevLink}}><button>Previous</button></a>
     {{/if}}
 
     {{#if this.hasNextPage}}
-    <a href={{this.nextLink}}><button>Siguiente</button></a>
+        <a href={{this.nextLink}}><button>Next</button></a>
     {{/if}}
     
 </div>
-<script src="/js/index.js"></script>
+
+<script src="/js/viewProduct.js"></script>

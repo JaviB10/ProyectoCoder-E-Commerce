@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const cartCollection = "carts";
 
 const cartSchema = new mongoose.Schema({
+
     products: [
         {
             product: {
@@ -15,6 +16,7 @@ const cartSchema = new mongoose.Schema({
             }
         }
     ]
+    
 })
 
 cartSchema.pre("find", function(){

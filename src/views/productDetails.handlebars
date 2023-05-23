@@ -1,0 +1,24 @@
+<div>
+    
+    <h1>PRODUCT</h1>
+
+    {{#each product}}
+        <ul>
+            <li>Title: {{this.title}}</li> 
+            <li>Description: {{this.description}}</li>
+            <li>Code: {{this.code}}</li>
+            <li>Price: {{this.price}}</li>
+            <li>Status: {{this.status}}</li>
+            <li>Stock: {{this.stock}}</li>
+            <li>Category: {{this.category}}</li>
+            <li>Thumbnail: {{this.thumbnail}}</li>
+            <li>ID: {{this._id}}</li>
+        </ul>
+        <button data-pid="{{this._id}}" id="addBtn">Add to Cart</button>
+    {{/each}}
+    
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/addToCart.js"></script>

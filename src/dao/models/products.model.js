@@ -4,6 +4,7 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 const productCollection = "products";
 
 const productSchema = new mongoose.Schema({
+
     title: {
         type: String,
         required: true
@@ -36,6 +37,7 @@ const productSchema = new mongoose.Schema({
         index: true
     },
     thumbnail: String
+    
 })
 
 productSchema.plugin(mongoosePaginate);

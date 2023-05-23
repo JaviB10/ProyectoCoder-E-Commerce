@@ -19,56 +19,53 @@ router.post('/', async (req, res) => {
     try {
         const cart = { products: [] };
         const result = await cartManager.save(cart);
-        res.status(200).send({ status: 'success', payload: result });
+        res.status(200).send({ status: "success", payload: result });
     } catch (error) {
-        res.status(500).send({ status: 'error', error });
+        res.status(500).send({ error });
     }
 });
 
 router.post('/:cid/product/:pid', async (req, res) => {
     try {
-
         const cartID = req.params.cid;
         const productID = req.params.pid;
 
         const productFound = await productManager.getProductById(productID);
         if (!productFound) {
-            return res.status(404).send({ error: 'Product not found' });
+            return res.status(404).send({ error: "Product not found" });
         }
 
         const cartFound = await cartManager.getCartById(cartID)
         if (!cartFound) {
-            return res.status(404).send({ error: 'Cart not found' });
+            return res.status(404).send({ error: "Cart not found" });
         }
 
         const result = await cartManager.addProductToCart(cartID, productID)
-        res.status(200).send({ status: 'success', pauload: result });
+        res.status(200).send({ status: "success", payload: result });
     } catch (error) {
-        res.status(500).send({ status: 'error', error });
+        res.status(500).send({ error });
     }
 });
 
 router.delete('/:cid/product/:pid', async (req, res) => {
-
     try {
         const cartID = req.params.cid;
         const productID = req.params.pid;
 
         const product = await productManager.getProductById(productID);
         if (!product) {
-            return res.status(404).send({ error: 'Product not found' });
+            return res.status(404).send({ error: "Product not found" });
         }
 
         const cart = await cartManager.getCartById(cartID)
         if (!cart) {
-            return res.status(404).send({ error: 'Cart not found' });
+            return res.status(404).send({ error: "Cart not found" });
         }
         
         const result = await cartManager.deleteProductToCart(cartID, productID)
-        res.status(200).send({ status: 'success', pauload: result });
-
+        res.status(200).send({ status: "success", payload: result });
     } catch (error) {
-        res.status(500).send({ status: 'error', error });
+        res.status(500).send({ error });
     }
 
 });
@@ -77,29 +74,32 @@ router.delete('/:cid', async (req, res) => {
     try {
         const cartID = req.params.cid;
         const cart = await cartManager.getCartById(cartID)
+
         if (!cart) {
-            return res.status(404).send({ error: 'Cart not found' });
+            return res.status(404).send({ error: "Cart not found" });
         }
+
         const result = await cartManager.deleteCart(cartID)
-        res.status(200).send({ status: 'success', pauload: result });
+        res.status(200).send({ status: "success", payload: result });
     } catch (error) {
-        res.status(500).send({ status: 'error', error });
+        res.status(500).send({ error });
     }
 });
 
 router.put('/:cid', async (req, res) => {
     try {
         const cartID = req.params.cid;
-        const productos = req.body;
+        const products = req.body;
 
         const cart = await cartManager.getCartById(cartID)
         if (!cart) {
-            return res.status(404).send({ error: 'Cart not found' });
+            return res.status(404).send({ error: "Cart not found" });
         }
-        const result = await cartManager.updateCart(cartID,productos);
-        res.status(200).send({ status: 'success', pauload: result });
+
+        const result = await cartManager.updateCart(cartID, products);
+        res.status(200).send({ status: "success", payload: result });
     } catch (error) {
-        res.status(500).send({ status: 'error', error });
+        res.status(500).send({ error });
     }
 });
 
@@ -111,17 +111,17 @@ router.put('/:cid/product/:pid', async (req, res) => {
 
         const product = await productManager.getProductById(productID);
         if (!product) {
-            return res.status(404).send({ error: 'Product not found' });
+            return res.status(404).send({ error: "Product not found" });
         }
         const cart = await cartManager.getCartById(cartID)
         if (!cart) {
-            return res.status(404).send({ error: 'Cart not foundo' });
+            return res.status(404).send({ error: "Cart not found" });
         }
 
-        const result = await cartManager.updateQuantityCart(cartID,productID,quantity);
-        res.status(200).send({ status: 'success', pauload: result });
+        const result = await cartManager.updateQuantityToCart(cartID, productID, quantity);
+        res.status(200).send({ status: "success", payload: result });
     } catch (error) {
-        res.status(500).send({ status: 'error', error });
+        res.status(500).send({ error });
     }
 });
 

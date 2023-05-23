@@ -29,22 +29,18 @@ router.get("/:pid", async (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    const { title, description, code, price, stock, category, thumbnail } = req.body;
-    
-    if (!title || !description || !code || !price || !stock || !category || !thumbnail){
+    const product = req.body;
+
+    if (product.status === null || product.status === undefined) {
+        product.status = true;
+    }
+
+    if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
         return res.status(400).send({ error: "Incomplete values" })
     }
 
     try {
-        const result = await productManager.save({
-            title,
-            description,
-            code,
-            price,
-            stock,
-            category,
-            thumbnail
-        });
+        const result = await productManager.save(product);
         if (result) {
             const io = req.app.get('socketio');
             io.emit("showProducts", await productManager.getAll());
