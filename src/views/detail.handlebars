@@ -1,6 +1,6 @@
 <div>
-    <h1>Productos</h1>
-    {{#each this.payload}}
+    <h1>Producto</h1>
+    {{#each product}}
         <ul>
             <li>title: {{this.title}}</li> 
             <li>description: {{this.description}}</li>
@@ -11,16 +11,8 @@
             <li>category: {{this.category}}</li>
             <li>thumbnail: {{this.thumbnail}}</li>
             <li>id: {{this._id}}</li>
-            <button onclick="ver('{{this._id}}')">Ver producto</button>
         </ul>
     {{/each}}
-    {{#if this.hasPrevPage}}
-    <a href={{this.prevLink}}><button>Anterior</button></a>
-    {{/if}}
-
-    {{#if this.hasNextPage}}
-    <a href={{this.nextLink}}><button>Siguiente</button></a>
-    {{/if}}
-    
+    <button onclick="agregar('{{this._id}}')">agregar</button>
 </div>
 <script src="/js/index.js"></script>

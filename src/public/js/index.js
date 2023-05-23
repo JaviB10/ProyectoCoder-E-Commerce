@@ -1,3 +1,12 @@
+const ver = (_id) => {
+    window.location.href = "/products/" + _id;
+}
+
+const agregar = (id) => {
+    console.log(id);
+    
+}
+
 const socket = io()
 const container = document.getElementById('container')
 
@@ -65,3 +74,5 @@ socket.on('newUserConnected', data => {
         icon: 'success'
     });
 });
+
+
