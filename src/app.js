@@ -1,14 +1,24 @@
 import express from "express";
 import __dirname from "./utils.js";
+import mongoose from "mongoose";
+import MongoStore from "connect-mongo";
+import session from "express-session";
 import routerProducts from "./routes/api/products.router.js";
 import routerCarts from "./routes/api/carts.router.js";
 import routerViews from './routes/web/views.router.js'
+import routerSessions from "./routes/api/sessions.router.js"
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
-import mongoose from "mongoose";
 import Messages from "./dao/dbManagers/messages.js";
 
 const app = express();
+
+try {
+    await mongoose.connect("mongodb+srv://javiballon07:8741236578952Javi@cluster1.er19kcj.mongodb.net/ecommerce?retryWrites=true&w=majority")
+    console.log("DB connection");
+} catch (error) {
+    console.log(error);
+}
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.static(`${__dirname}/public`))
@@ -18,16 +28,20 @@ app.engine("handlebars", handlebars.engine())
 app.set("views", `${__dirname}/views`)
 app.set("view engine", "handlebars")
 
+app.use(session({
+    store: MongoStore.create({
+        client: mongoose.connection.getClient(),
+        ttl: 30
+    }),
+    secret: "secretCoder", 
+    resave: true, 
+    saveUninitialized: true
+}))
+
 app.use(`/`, routerViews);
+app.use('/api/sessions', routerSessions);
 app.use("/api/products", routerProducts);
 app.use("/api/carts", routerCarts);
-
-try {
-    await mongoose.connect("mongodb+srv://javiballon07:8741236578952Javi@cluster1.er19kcj.mongodb.net/ecommerce?retryWrites=true&w=majority")
-    console.log("DB connection");
-} catch (error) {
-    console.log(error);
-}
 
 const server = app.listen(8081, () => {
     console.log("Listening on 8081")

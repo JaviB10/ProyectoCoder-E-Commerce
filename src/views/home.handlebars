@@ -1,8 +1,19 @@
 <div>
 
+     <h1>WELCOME!</h1>
+
+    <div>
+        <p>Username: {{user.name}}</p>
+        <p>Email: {{user.email}}</p>
+        <p>Age: {{user.age}}</p>
+        <p>Role: {{user.role}}</p>
+        <br/>
+        <a href="/api/sessions/logout" ><button>Log out</button></a>
+    </div>
+
     <h1>PRODUCTS</h1>
 
-    {{#each this.payload}}
+    {{#each products.payload}}
         <ul>
             <li>title: {{this.title}}</li> 
             <li>Price: {{this.price}}</li>
@@ -13,14 +24,15 @@
         </ul>
     {{/each}}
 
-    {{#if this.hasPrevPage}}
-        <a href={{this.prevLink}}><button>Previous</button></a>
+    {{#if products.hasPrevPage}}
+        <a href={{products.prevLink}}><button>Previous</button></a>
     {{/if}}
 
-    {{#if this.hasNextPage}}
-        <a href={{this.nextLink}}><button>Next</button></a>
+    {{#if products.hasNextPage}}
+        <a href={{products.nextLink}}><button>Next</button></a>
     {{/if}}
     
 </div>
 
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/viewProduct.js"></script>

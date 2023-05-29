@@ -12,7 +12,7 @@ export default class Carts {
     }
     
     getCartById = async (id) => {
-        const result = await cartModel.find({_id: id});
+        const result = await cartModel.findOne({_id:id}).lean();
         return result;
     }
 

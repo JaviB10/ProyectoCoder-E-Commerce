@@ -15,6 +15,20 @@ router.get("/", async (req, res) => {
     }
 })
 
+router.get('/:cid', async (req, res) => {
+    try {
+        const { cid } = req.params;
+        const cart = await cartManager.getCartById({ _id: cid });
+        if (!cart) {
+            return res.status(400).send({ error: 'Carrito no encontrado' });
+        }
+        res.send({ status: 'success', payload: cart });
+    } catch (error) {
+        res.status(500).send({ status: 'error', error });
+    }
+
+});
+
 router.post('/', async (req, res) => {
     try {
         const cart = { products: [] };

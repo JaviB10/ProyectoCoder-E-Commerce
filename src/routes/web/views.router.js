@@ -1,12 +1,38 @@
 import { Router } from "express";
-import { cartModel } from "../../dao/models/carts.model.js";
 import { productModel } from "../../dao/models/products.model.js"; 
 import Products from "../../dao/dbManagers/products.js";
+import Carts from "../../dao/dbManagers/carts.js";
 
 const router = Router();
 const productManager = new Products();
+const cartManager = new Carts();
 
-router.get('/products', async (req, res) => {
+const publicAccess = (req, res, next) => {
+    if(req.session.user){
+        return res.redirect("/products");
+    }
+    next()
+}
+const privateAccess = (req, res, next) => {
+    if(!req.session.user) {
+        return res.redirect("/login");
+    } 
+    next()
+}
+
+router.get("/register", publicAccess, (req, res) => {
+    res.render("register");
+})
+router.get("/login", publicAccess, (req, res) => {
+    res.render("login");
+})
+
+//Redireccionar raiz al login
+router.get('/', publicAccess, (req, res) => {
+    res.redirect('/login');
+});
+
+router.get('/products', privateAccess, async (req, res) => {
     const { page = 1, limit = 10, category = "", status = "", sort = "" } = req.query;
 
     const filter = {};
@@ -35,7 +61,7 @@ router.get('/products', async (req, res) => {
         prevLink: products.hasPrevPage ? `/products?page=${products.prevPage}&limit=${limit}&category=${category}&status=${status}&sort=${sort}` : null,
         nextLink: products.hasNextPage ? `/products?page=${products.nextPage}&limit=${limit}&category=${category}&status=${status}&sort=${sort}` : null
     }
-    res.render("home", result);
+    res.render("home", {products:result, user:req.session.user});
 });
 
 router.get("/products/:pid", async (req, res) => {
@@ -44,34 +70,9 @@ router.get("/products/:pid", async (req, res) => {
     res.render("productDetails", {product})
 })
 
-
-router.get('/carts/:cid', async (req, res) => {
+router.get('/carts/:cid', privateAccess , async (req, res) => {
         const { cid } = req.params;
-
-        const cart = await cartModel.find({ _id: cid });
-
-        const result = {
-            _id : cart[0]._id,
-            products : []
-        }
-
-        cart[0].products.forEach(item=>{
-            result.products.push({
-                product: {
-                    _id : item.product._id,
-                    title: item.product.title,
-                    description: item.product.description,
-                    code: item.product.code,
-                    price: item.product.price,
-                    status: item.product.status,
-                    stock: item.product.stock,
-                    category: item.product.category,
-                    thumbnail: item.product.thumbnail
-                },
-                quantity: item.quantity
-            })
-        })
-
+        const result = await cartManager.getCartById({ _id: cid });
         res.render("cart", result)
 });
 
@@ -84,7 +85,7 @@ router.get("/realtimeproducts", async (req,res) => {
     })
 });
 
-router.get("/chat", async (req, res) => {
+router.get("/chat", (req, res) => {
     res.render("chat");
 })
 
