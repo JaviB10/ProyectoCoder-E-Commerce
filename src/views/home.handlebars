@@ -3,10 +3,15 @@
      <h1>WELCOME!</h1>
 
     <div>
-        <p>Username: {{user.name}}</p>
-        <p>Email: {{user.email}}</p>
-        <p>Age: {{user.age}}</p>
-        <p>Role: {{user.role}}</p>
+        {{#if user.first_name}}
+            <p>Username: {{user.first_name}} {{user.last_name}} </p>
+            <p>Email: {{user.email}}</p>
+            <p>Age: {{user.age}}</p>
+            <p>Role: {{user.role}}</p>
+        {{else}}
+            <p>Email: {{user.email}}</p>
+            <p>Role: {{user.role}}</p>
+        {{/if}}
         <br/>
         <a href="/api/sessions/logout" ><button>Log out</button></a>
     </div>

@@ -10,6 +10,8 @@ import routerSessions from "./routes/api/sessions.router.js"
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import Messages from "./dao/dbManagers/messages.js";
+import initializePassport from "./config/passport.config.js";
+import passport from "passport";
 
 const app = express();
 
@@ -24,19 +26,24 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.static(`${__dirname}/public`))
 app.use(express.json())
 
-app.engine("handlebars", handlebars.engine())
-app.set("views", `${__dirname}/views`)
-app.set("view engine", "handlebars")
-
 app.use(session({
     store: MongoStore.create({
         client: mongoose.connection.getClient(),
-        ttl: 30
+        ttl: 60
     }),
     secret: "secretCoder", 
     resave: true, 
     saveUninitialized: true
 }))
+
+//Passport
+initializePassport();
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.engine("handlebars", handlebars.engine())
+app.set("views", `${__dirname}/views`)
+app.set("view engine", "handlebars")
 
 app.use(`/`, routerViews);
 app.use('/api/sessions', routerSessions);

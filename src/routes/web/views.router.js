@@ -49,6 +49,7 @@ router.get('/products', privateAccess, async (req, res) => {
     } 
         
     const products = await productModel.paginate(filter, { limit, page, lean: true, sort:sortBy });
+    
     const result = {
         status: "success",
         payload: products.docs,
@@ -66,7 +67,7 @@ router.get('/products', privateAccess, async (req, res) => {
 
 router.get("/products/:pid", async (req, res) => {
     const { pid } = req.params;
-    const product = await productManager.getProductById(pid)
+    const product = await productManager.getProductById({ _id: pid })
     res.render("productDetails", {product})
 })
 
