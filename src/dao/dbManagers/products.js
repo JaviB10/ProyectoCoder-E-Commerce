@@ -11,6 +11,11 @@ export default class Products {
         return result
     }
 
+    getAllPaginate = async (filter, limit, page, sortBy) => {
+        const products = await productModel.paginate(filter, { limit, page, lean: true, sort:sortBy })
+        return products
+    }
+
     getProductById = async (id) => {
         const result = await productModel.find({_id: id}).lean();
         return result;

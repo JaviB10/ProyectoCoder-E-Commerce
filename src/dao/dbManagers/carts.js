@@ -10,6 +10,11 @@ export default class Carts {
         const carts = await cartModel.find().lean();
         return carts
     }
+
+    newCart = async () => {
+        const result = await cartModel.create();
+        return result;
+    }
     
     getCartById = async (id) => {
         const result = await cartModel.findOne({_id:id}).lean();

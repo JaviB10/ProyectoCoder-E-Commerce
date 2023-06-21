@@ -3,13 +3,28 @@ import mongoose from "mongoose";
 const userCollection = "users";
 
 const userSchema = new mongoose.Schema({
+
     first_name: String,
     last_name: String,
-    email: String,
-    age: String,
-    password: String
+    email: {
+        type: String,
+        unique: true
+    },
+    age: Number,
+    password: String,
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "carts"
+    },
+    role: {
+        type: String,
+        default: "USER"
+    }
+
 })
 
-const userModel = mongoose.model(userCollection, userSchema)
+userSchema.pre("findOne", function(){
+    this.populate('cart')
+})
 
-export default userModel
+export const userModel = mongoose.model(userCollection, userSchema)

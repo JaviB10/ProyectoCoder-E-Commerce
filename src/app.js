@@ -1,17 +1,21 @@
 import express from "express";
 import __dirname from "./utils.js";
 import mongoose from "mongoose";
-import MongoStore from "connect-mongo";
-import session from "express-session";
 import routerProducts from "./routes/api/products.router.js";
 import routerCarts from "./routes/api/carts.router.js";
 import routerViews from './routes/web/views.router.js'
-import routerSessions from "./routes/api/sessions.router.js"
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import Messages from "./dao/dbManagers/messages.js";
 import initializePassport from "./config/passport.config.js";
 import passport from "passport";
+import routerUsers from "./routes/api/user.router.js"
+import cookieParser from "cookie-parser";
+
+const cartsRouter = new routerCarts()
+const usersRouter = new routerUsers()
+const productsRouter = new routerProducts()
+const viewsRouter = new routerViews()
 
 const app = express();
 
@@ -24,31 +28,21 @@ try {
 
 app.use(express.urlencoded({extended: true}))
 app.use(express.static(`${__dirname}/public`))
+app.use(cookieParser())
 app.use(express.json())
-
-app.use(session({
-    store: MongoStore.create({
-        client: mongoose.connection.getClient(),
-        ttl: 60
-    }),
-    secret: "secretCoder", 
-    resave: true, 
-    saveUninitialized: true
-}))
 
 //Passport
 initializePassport();
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.engine("handlebars", handlebars.engine())
 app.set("views", `${__dirname}/views`)
 app.set("view engine", "handlebars")
 
-app.use(`/`, routerViews);
-app.use('/api/sessions', routerSessions);
-app.use("/api/products", routerProducts);
-app.use("/api/carts", routerCarts);
+app.use(`/`, viewsRouter.getRouter());
+app.use("/api/products", productsRouter.getRouter());
+app.use("/api/carts", cartsRouter.getRouter());
+app.use("/api/users", usersRouter.getRouter());
 
 const server = app.listen(8081, () => {
     console.log("Listening on 8081")
