@@ -21,7 +21,7 @@ const app = express();
 
 try {
     console.log("entra aca");
-    await mongoose.connect("mongodb://javiballon07:5MmVeznZvMuX7kHe@ac-emaoqdy-shard-00-00.er19kcj.mongodb.net:27017,ac-emaoqdy-shard-00-01.er19kcj.mongodb.net:27017,ac-emaoqdy-shard-00-02.er19kcj.mongodb.net:27017/?ssl=true&replicaSet=atlas-w0nwcn-shard-0&authSource=admin&retryWrites=true&w=majority")
+    await mongoose.connect("mongodb+srv://javiballon07:O8m5iVRnYXnSNBvh@cluster1.er19kcj.mongodb.net/ecommerce?retryWrites=true&w=majority")
     console.log("DB connection");
 } catch (error) {
     console.log(error);
