@@ -1,14 +1,14 @@
-const postButtons = document.getElementById(`addBtn`);
+const postButtons = document.getElementsByClassName("addBtn");
 const user = document.getElementById('userInfo')
 const cid = user.dataset.cid;
-console.log(cid);
 
 
-postButtons.addEventListener(`click`, () => {
-    // Obtener el valor de pid
-    const pid = postButtons.dataset.pid; // Reemplaza 'pid' por la forma en que obtienes el valor de pid dinámicamente
-    console.log(pid);
-    // Realizar la solicitud POST aquí
+for (let i = 0; i < postButtons.length; i++) {
+    const postButton = postButtons[i];
+    postButton.addEventListener(`click`, () => {
+
+    const pid = postButton.dataset.pid; 
+
     const url = `http://localhost:8081/api/carts/${cid}/product/${pid}`;
     console.log(url);
     fetch(url, {
@@ -46,3 +46,4 @@ postButtons.addEventListener(`click`, () => {
         console.error("Error al realizar la solicitud POST:", error);
     });
 });
+}

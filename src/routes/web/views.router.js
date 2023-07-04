@@ -1,56 +1,24 @@
 import Router from "../router.js"
-import { productModel } from "../../dao/models/products.model.js"; 
-import Products from "../../dao/dbManagers/products.js";
-import Carts from "../../dao/dbManagers/carts.js";
 import { passportStrategiesEnum } from "../../config/enums.js";
-
-
-// const productManager = new Products();
-// const cartManager = new Carts();
+import { getProductById, getProductsPaginate } from "../../controllers/product.controllers.js";
+import { getCartById } from "../../controllers/carts.controllers.js";
 
 export default class ViewsRouter extends Router {
     init() {
         this.get('/login', ['PUBLIC'], passportStrategiesEnum.NOTHING, (req, res) => {
+            if (req.cookies["coderCookieToken"]) res.redirect('/products');
             res.render('login');
         });
         this.get('/register', ['PUBLIC'], passportStrategiesEnum.NOTHING, (req, res) => {
+            if (req.cookies["coderCookieToken"]) res.redirect('/products');
             res.render('register');
         });
         this.get('/', ['PUBLIC'], passportStrategiesEnum.NOTHING, (req, res) => {
             res.redirect('/login');
         });
-        this.get('/products', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, async (req, res) => {
-            const { page = 1, limit = 10, category = "", status = "", sort = "" } = req.query;
-        
-            const filter = {};
-            if (category) {
-                filter.category = category; // Agregar filtro por categoría si se especifica
-            }
-            if (status) {
-                filter.status = status; // Agregar filtro por categoría si se especifica
-            }
-                
-            const sortBy = {};
-            if (sort) {
-                sortBy.price = sort
-            } 
-                
-            const products = await productModel.paginate(filter, { limit, page, lean: true, sort:sortBy });
-            
-            const result = {
-                status: "success",
-                payload: products.docs,
-                totalPages: products.totalPages,
-                prevPage: products.prevPage,
-                nextPage: products.nextPage,
-                page: products.page,
-                hasPrevPage: products.hasPrevPage,
-                hasNextPage: products.hasNextPage,
-                prevLink: products.hasPrevPage ? `/products?page=${products.prevPage}&limit=${limit}&category=${category}&status=${status}&sort=${sort}` : null,
-                nextLink: products.hasNextPage ? `/products?page=${products.nextPage}&limit=${limit}&category=${category}&status=${status}&sort=${sort}` : null
-            }
-            res.render("home", {products:result, user:req.user});
-        });
+        this.get('/products', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductsPaginate);
+        this.get("/products/:pid", ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductById)
+        this.get('/carts/:cid', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getCartById);
     }
 }
 
@@ -79,11 +47,7 @@ export default class ViewsRouter extends Router {
 
 
 
-// router.get("/products/:pid", privateAccess, async (req, res) => {
-//     const { pid } = req.params;
-//     const product = await productManager.getProductById({ _id: pid })
-//     res.render("productDetails", {product})
-// })
+
 
 // router.get('/carts/:cid', privateAccess , async (req, res) => {
 //         const { cid } = req.params;

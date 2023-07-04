@@ -55,7 +55,7 @@ export default class Router {
         if (strategy === passportStrategiesEnum.JWT) {
             passport.authenticate(strategy, function (err, user, info) {
                 if (err) return next(err)
-                if (!user) return res.status(401).send({ error: info.message ? info.message : info.toString()})
+                if (!user) return res.redirect('/login')
                 req.user = user
                 next()
             }) (req, res, next)

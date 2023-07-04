@@ -1,6 +1,6 @@
 <div>
 
-     <h1>WELCOME!</h1>
+    <h1 id="userInfo" data-cid="{{user.cart._id}}">WELCOME!</h1>
 
     <div>
         {{#if user.first_name}}
@@ -13,9 +13,9 @@
             <p>Role: {{user.role}}</p>
         {{/if}}
         <br/>
-        <a href="/api/users/logout" ><button>Log out</button></a>
+        <a href="/api/users/logout"><button>Log out</button></a>
     </div>
-
+    <button onclick="verCart('{{user.cart._id}}')">View Cart</button>     
     <h1>PRODUCTS</h1>
 
     {{#each products.payload}}
@@ -26,6 +26,7 @@
             <li>Stock: {{this.stock}}</li>
             <li>Category: {{this.category}}</li>
             <button onclick="ver('{{this._id}}')">View Product</button>
+            <button data-pid="{{this._id}}" class="addBtn">Add to Cart</button>
         </ul>
     {{/each}}
 
@@ -40,4 +41,8 @@
 </div>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/addNew.js"></script>
+<script src="/js/viewCart.js"></script>
 <script src="/js/viewProduct.js"></script>
+

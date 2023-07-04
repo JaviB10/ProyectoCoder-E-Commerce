@@ -1,77 +1,14 @@
 import Router from "../router.js";
-import Products from "../../dao/dbManagers/products.js";
 import { passportStrategiesEnum } from "../../config/enums.js";
-
-const productManager = new Products();
+import { deleteOneProduct, getProductById, getProducts, saveProduct, updateProduct } from "../../controllers/product.controllers.js";
 
 export default class ProductsRouter extends Router {
     init() {
-        this.get("/", ["PUBLIC"], passportStrategiesEnum.NOTHING, async (req, res) => {
-            try {
-                const products = await productManager.getAll()
-                res.sendSuccess(products)
-            } catch (error) {
-                res.sendServerError(error.message)
-            }
-        })
-        this.get("/:pid", ["PUBLIC"], passportStrategiesEnum.NOTHING, async (req, res) => {
-            try {
-                const pid = Number(req.params.pid);
-                const productFound = await productManager.getProductById(pid)
-                if (!productFound) {
-                    return res.sendClientError("Product not found")
-                }
-                res.sendSuccess(productFound)
-            } catch (error) {
-                res.sendServerError(error.message)
-            }
-        })
-        this.post("/", ["ADMIN"], passportStrategiesEnum.JWT, async (req, res) => {
-            try {
-                const product = req.body;
-
-                if (product.status === null || product.status === undefined) {
-                    product.status = true;
-                }
-
-                if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
-                    return res.sendClientError("Incomplete values")
-                }
-                const result = await productManager.save(product);
-                res.sendSuccess(result)
-            } catch (error) {
-                res.sendServerError(error.message)
-            }
-        })
-        this.put("/:pid", ["ADMIN"], passportStrategiesEnum.JWT, async (req, res) => {
-            try {
-                const product = req.body;
-                const { pid } = req.query
-
-                const productFound = await productManager.getProductById(pid);
-                if (!productFound) {
-                    return res.sendClientError("Product not found")
-                }
-                const result = await productManager.update(pid, product);
-                res.sendSuccess(result)
-            } catch (error) {
-                res.sendServerError(error.message)
-            }
-        })
-        this.delete("/:pid", ["ADMIN"], passportStrategiesEnum.JWT, async (req, res) => {
-            try {
-                const { pid } = req.query
-
-                const productFound = await productManager.getProductById(pid);
-                if (!productFound) {
-                    return res.sendClientError("Product not found")
-                }
-                const result = await productManager.delete(pid);
-                res.sendSuccess(result)
-            } catch (error) {
-                res.sendServerError(error.message)
-            }
-        })
+        this.get("/", ["ADMIN", "USER"], passportStrategiesEnum.JWT, getProducts)
+        this.get("/:pid", ["ADMIN", "USER"], passportStrategiesEnum.JWT, getProductById)
+        this.post("/", ["ADMIN", "USER"], passportStrategiesEnum.JWT, saveProduct)
+        this.put("/:pid", ["ADMIN", "USER"], passportStrategiesEnum.JWT, updateProduct)
+        this.delete("/:pid", ["ADMIN", "USER"], passportStrategiesEnum.JWT, deleteOneProduct)
     }
 }
 

@@ -1,5 +1,5 @@
 import passport from "passport";
-import {userModel} from "../dao/models/user.model.js";
+import {userModel} from "../dao/dbManagers/models/user.model.js";
 import GitHubStrategy from "passport-github2";
 import jwt from "passport-jwt"
 import { PRIVATE_KEY } from "./contants.js";
@@ -39,6 +39,7 @@ const initializePassport = () => {
                     email: email,
                     password: ""
                 }
+                
                 const result = await userModel.create(newUser);
                 done(null, result);
             } else {

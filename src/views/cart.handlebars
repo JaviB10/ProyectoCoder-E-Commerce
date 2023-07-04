@@ -2,7 +2,7 @@
 
     <h1>CART</h1>
     
-    <h3>ID CART: {{this._id}}</h3>
+    <h3 data-cid="{{this._id}}" id="cartInfo">ID CART: {{this._id}}</h3>
 
     {{#each this.products}}
         
@@ -17,8 +17,13 @@
             <li>Thumbnail: {{this.product.thumbnail}}</li>
             <li>ID: {{this.product._id}}</li>
             <li>Quantity: {{this.quantity}}</li>
+            <button data-pid="{{this.product._id}}" class="deleteProductBtn">Delete product</button>
         </ul>
         
     {{/each}}
-
+    <button id="deleteAllBtn">Delete product</button>
 </div>
+
+<script src="/js/deleteProduct.js"></script>
+
+

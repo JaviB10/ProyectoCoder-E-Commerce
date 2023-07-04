@@ -20,7 +20,8 @@ const viewsRouter = new routerViews()
 const app = express();
 
 try {
-    await mongoose.connect("mongodb+srv://javiballon07:8741236578952Javi@cluster1.er19kcj.mongodb.net/ecommerce?retryWrites=true&w=majority")
+    console.log("entra aca");
+    await mongoose.connect("mongodb+srv://javiballon07:gNPBdz7JPa0hSWcD@cluster1.er19kcj.mongodb.net/ecommerce?retryWrites=true&w=majority")
     console.log("DB connection");
 } catch (error) {
     console.log(error);
