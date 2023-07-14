@@ -1,3 +1,4 @@
+import UsersDTO from "../dao/DTOs/users.dto.js";
 import { saveCartService } from "../services/carts.services.js";
 import { 
     deleteUserService,
@@ -57,8 +58,9 @@ const loginUser = async (req, res) => {
 
 const registerUser = async (req, res) => {
     try {
-        const { first_name, last_name, age, email, password } = req.body;
-        if (!first_name || !last_name || !age || !email || !password) {
+        const { name, last_name, phone, age, email, password } = req.body;
+        const user = new UsersDTO({name, last_name, phone})
+        if (!name || !last_name || !age || !email || !password) {
             return res.sendClientError("Incomplete values");
         }
         const exists = await getUserByEmailService(email);
@@ -66,12 +68,21 @@ const registerUser = async (req, res) => {
             return res.sendClientError("Incomplete values");
         }    
         const hashedPassword = createHash(password);
-        const newCart = await saveCartService();
+        const newCart = await saveCartService({ products: [] });
         const newUser = {
-            ...req.body, cart: newCart._id
+            ...req.body,...user, cart: newCart._id
         }
         newUser.password = hashedPassword
         const result = await saveUserService(newUser);
+        res.sendSuccess(result);
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
+const userCurrent = async (req,res) => {
+    try {
+        const result = new UsersDTO(req.user)
         res.sendSuccess(result);
     } catch (error) {
         res.sendServerError(error.message);
@@ -99,6 +110,18 @@ const deleteUser = async (req, res) => {
     }
 }
 
+const loginGithub = async (req, res) => {
+    res.sendSuccess("User registered")
+}
+
+const callBackGithub = async (req, res) => {
+    const accessToken = generateToken(req.user);
+    res.cookie(
+        'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
+    )
+    res.redirect('/')
+}
+
 export {
     getUsers,
     getUserById,
@@ -106,5 +129,8 @@ export {
     registerUser,
     updateUser,
     deleteUser,
-    loginUser
+    loginUser,
+    loginGithub,
+    callBackGithub,
+    userCurrent
 }

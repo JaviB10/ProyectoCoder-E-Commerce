@@ -1,12 +1,14 @@
 import passport from "passport";
-import {userModel} from "../dao/dbManagers/models/user.model.js";
 import GitHubStrategy from "passport-github2";
 import jwt from "passport-jwt"
 import { PRIVATE_KEY } from "./contants.js";
+import config from "./config.js";
+import { getUserByEmailService } from "../services/users.services.js";
+import { saveCartService } from "../services/carts.services.js";
+import { createHash } from "../utils.js";
 
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;
-
 
 const initializePassport = () => {
 
@@ -22,25 +24,25 @@ const initializePassport = () => {
     }))
 
     passport.use("github", new GitHubStrategy({
-        clientID: "Iv1.cc34d37a291c0072",
-        clientSecret: "7d85d87577b357abe376dcc748364a07c8333142",
-        callbackURL: "http://localhost:8081/api/sessions/github-callback",
+        clientID: config.idGitHub,//"Iv1.cc34d37a291c0072"
+        clientSecret: config.secretGitHub, //"7d85d87577b357abe376dcc748364a07c8333142",
+        callbackURL: `http://localhost:${Number(config.port)}/api/users/github-callback`,
         scope: ["user:email"]
     }, async (accessToken, refreshToken, profile, done) => {
         try {
-            console.log(profile._json.email);
             const email = profile._json.email
-            const user = await userModel.findOne({ email: email})
+            const user = await getUserByEmailService(email)
             if (!user) {
+                const newCart = await saveCartService({ products: [] })
                 const newUser = {
-                    first_name: profile._json.name,
-                    last_name: "",
+                    name: profile._json.name,
+                    phone: "",
                     age: "",
                     email: email,
-                    password: ""
+                    password: createHash(config.passDefault),
+                    cart: newCart._id
                 }
-                
-                const result = await userModel.create(newUser);
+                const result = await saveCartService(newUser);
                 done(null, result);
             } else {
                 done(null, user);

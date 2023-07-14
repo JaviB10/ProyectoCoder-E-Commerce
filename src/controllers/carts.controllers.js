@@ -21,13 +21,12 @@ const getCarts = async (req, res) => {
 
 const getCartById = async (req, res) => {
     try {
-        const { cid } = req.query;
+        const cid = req.params.cid;
         const cartFound = await getCartByIdService(cid);
         if (!cartFound) {
             return res.sendClientError("Cart not found");
         }
-        res.sendSuccess(cartFound);
-        res.render("cart", result)
+        res.render("cart", cartFound)
     } catch (error) {
         res.sendServerError(error.message);
     }
@@ -44,12 +43,12 @@ const saveCart = async (req, res) => {
 
 const addProductToCart = async (req, res) => {
     try {
-        const { cid, pid } = req.query;
+        const { cid, pid } = req.params;
         const productFound = await getProductByIdService(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");
         }
-        const cartFound = await getCartById(cid)
+        const cartFound = await getCartByIdService(cid)
         if (!cartFound) {
             return res.sendClientError("Cart not found");
         }
@@ -62,9 +61,9 @@ const addProductToCart = async (req, res) => {
 
 const updateCart = async (req, res) => {
     try {
-        const { cid } = req.query;
+        const cid = req.params.cid;
         const { product } = req.body;
-        const cartFound = await getCartById(cid)
+        const cartFound = await getCartByIdService(cid)
         if (!cartFound) {
             return res.sendClientError("Cart not found");
         }
@@ -77,13 +76,13 @@ const updateCart = async (req, res) => {
 
 const updateQuantity = async (req, res) => {
     try {
-        const { cid, pid } = req.query;
+        const { cid, pid } = req.params;
         const cantidad = req.body;
         const productFound = await getProductByIdService(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");
         }
-        const cartFound = await getCartById(cid)
+        const cartFound = await getCartByIdService(cid)
         if (!cartFound) {
             return res.sendClientError("Cart not found");
         }
@@ -96,12 +95,12 @@ const updateQuantity = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        const { cid, pid } = req.query;
+        const { cid, pid } = req.params;
         const productFound = await getProductByIdService(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");
         }
-        const cartFound = await getCartById(cid)
+        const cartFound = await getCartByIdService(cid)
         if (!cartFound) {
             return res.sendClientError("Cart not found");
         }
@@ -114,8 +113,8 @@ const deleteProduct = async (req, res) => {
 
 const deleteAllProduct = async (req, res) => {
     try {
-        const { cid } = req.query; 
-        const cartFound = await getCartById(cid)
+        const cid = req.params.cid; 
+        const cartFound = await getCartByIdService(cid)
         if (!cartFound) {
             return res.sendClientError("Cart not found");
         }

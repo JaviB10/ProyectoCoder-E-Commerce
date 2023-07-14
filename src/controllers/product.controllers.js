@@ -52,12 +52,12 @@ const getProductsPaginate = async (req, res) => {
 
 const getProductById = async (req, res) => {
     try {
-        const { pid } = req.query;
+        const pid = req.params.pid;
         const productFound = await getProductByIdService(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");
         }
-        res.sendSuccess(productFound);
+        
         res.render("productDetails", {productFound, user: req.user})
     } catch (error) {
         res.sendServerError(error.message);
@@ -82,7 +82,7 @@ const saveProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        const { pid } = req.query;
+        const pid = req.params.pid;
         const product = req.body;
         const productFound = await getProductById(pid);
         if (!productFound) {
@@ -97,7 +97,7 @@ const updateProduct = async (req, res) => {
 
 const deleteOneProduct = async (req, res) => {
     try {
-        const { pid } = req.query;
+        const pid = req.params.pid;
         const productFound = await getProductById(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");

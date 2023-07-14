@@ -17,8 +17,8 @@ export default class Carts {
         return await cartModel.findOne({_id:cid}).lean();
     }
 
-    save = async () => {
-        return await cartModel.create();
+    save = async (cart) => {
+        return await cartModel.create(cart);
     }
 
     addProductToCart = async (cid, pid) => { 
@@ -27,9 +27,10 @@ export default class Carts {
         if (productIndex !== -1) {
             cartFound.products[productIndex].quantity += 1;
         } else {
-            cartFound.products.push({ product: pid});
+            cartFound.products.push({product: pid});
         }
-        return await cartFound.save();
+        await cartFound.save();
+        return cartFound;
     }
 
     updateCart = async (cid, product) =>{

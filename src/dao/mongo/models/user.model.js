@@ -4,8 +4,11 @@ const userCollection = "users";
 
 const userSchema = new mongoose.Schema({
 
-    first_name: String,
-    last_name: String,
+    name: String,
+    phone: {
+        type: String,
+        unique: true
+    },
     email: {
         type: String,
         unique: true

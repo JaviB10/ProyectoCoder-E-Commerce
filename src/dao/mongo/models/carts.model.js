@@ -14,9 +14,8 @@ const cartSchema = new mongoose.Schema({
                 type: Number,
                 default: 1
             }
-        }
+        },
     ]
-    
 })
 
 cartSchema.pre("findOne", function(){

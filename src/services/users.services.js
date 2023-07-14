@@ -1,32 +1,34 @@
-import { USERSDAO } from "../dao/index.js";
+import UsersRepository from "../repositories/users.repository.js";
+
+const usersRepository = new UsersRepository();
 
 const getUsersService = async () => {
-    const users = await USERSDAO.getAll();
+    const users = await usersRepository.getUsersRepository();
     return users;
 }
 
 const getUserByIdService = async (uid) => {
-    const user = await USERSDAO.getUserById(uid);
+    const user = await usersRepository.getUserByIdRepository(uid);
     return user;
 }
 
 const getUserByEmailService = async (email) => {
-    const user = await USERSDAO.getUserByEmail(email);
+    const user = await usersRepository.getUserByEmailRepository(email);
     return user;
 }
 
 const saveUserService = async (user) => {
-    const result = await USERSDAO.save(user);
+    const result = await usersRepository.saveUserRepository(user);
     return result;
 }
 
 const updateUserService = async (uid, user) => {
-    const result = await USERSDAO.update(uid, user);
+    const result = await usersRepository.updateUserRepository(uid, user);
     return result;
 }
 
 const deleteUserService = async (uid) => {
-    const result = await USERSDAO.delete(uid);
+    const result = await usersRepository.deleteUserRepository(uid);
     return result;
 }
 

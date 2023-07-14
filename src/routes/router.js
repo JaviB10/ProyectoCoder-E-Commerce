@@ -52,7 +52,7 @@ export default class Router {
     }
 
     applyCustomPassportCall = (strategy) => (req, res, next) => {
-        if (strategy === passportStrategiesEnum.JWT) {
+        if (strategy === passportStrategiesEnum.JWT || strategy === passportStrategiesEnum.GITHUB) {
             passport.authenticate(strategy, function (err, user, info) {
                 if (err) return next(err)
                 if (!user) return res.redirect('/login')
