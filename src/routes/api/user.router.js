@@ -1,6 +1,6 @@
 import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js"
-import { callBackGithub, loginGithub, loginUser, registerUser } from "../../controllers/users.controllers.js"
+import { callBackGithub, loginGithub, loginUser, registerUser, userCurrent } from "../../controllers/users.controllers.js"
 
 export default class UsersRouter extends Router {
     init() {

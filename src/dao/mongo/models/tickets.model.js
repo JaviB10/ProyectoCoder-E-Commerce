@@ -14,14 +14,10 @@ const ticketSchema = new mongoose.Schema({
     },
     amount: Number,
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "users"
-    },
+        type: String,
+        require: true
+    }
 
-})
-
-ticketSchema.pre("findOne", function(){
-    this.populate('users')
 })
 
 export const ticketModel = mongoose.model(ticketCollection, ticketSchema)

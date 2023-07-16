@@ -1,6 +1,6 @@
 import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js"
-import { addProductToCart, deleteAllProduct, deleteProduct, getCartById, getCarts, saveCart, updateCart, updateQuantity } from "../../controllers/carts.controllers.js";
+import { addProductToCart, deleteAllProduct, deleteProduct, purchaseCart, getCartById, getCarts, saveCart, updateCart, updateQuantity } from "../../controllers/carts.controllers.js";
 
 export default class CartsRouter extends Router {
     init() {
@@ -12,5 +12,6 @@ export default class CartsRouter extends Router {
         this.put('/:cid/product/:pid', ["ADMIN", "USER"], passportStrategiesEnum.JWT, updateQuantity);
         this.delete('/:cid/product/:pid', ["ADMIN", "USER"], passportStrategiesEnum.JWT, deleteProduct);
         this.delete('/:cid', ["ADMIN", "USER"], passportStrategiesEnum.JWT, deleteAllProduct);
+        this.post('/:cid/purchase', ["ADMIN", "USER"], passportStrategiesEnum.JWT, purchaseCart);
     }
 }

@@ -3,6 +3,7 @@ import __dirname from "./utils.js";
 import routerProducts from "./routes/api/products.router.js";
 import routerCarts from "./routes/api/carts.router.js";
 import routerViews from './routes/web/views.router.js'
+import routerTickets from "./routes/api/tickets.router.js"
 import handlebars from "express-handlebars";
 import { Server } from "socket.io";
 import Messages from "./dao/mongo/messages.js";
@@ -17,6 +18,7 @@ const cartsRouter = new routerCarts()
 const usersRouter = new routerUsers()
 const productsRouter = new routerProducts()
 const viewsRouter = new routerViews()
+const ticketsRouter = new routerTickets()
 
 const app = express();
 
@@ -37,6 +39,7 @@ app.use(`/`, viewsRouter.getRouter());
 app.use("/api/products", productsRouter.getRouter());
 app.use("/api/carts", cartsRouter.getRouter());
 app.use("/api/users", usersRouter.getRouter());
+app.use("/api/ticket", ticketsRouter.getRouter());
 
 const port = Number(config.port)
 const server = app.listen(port, () => {

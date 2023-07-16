@@ -6,7 +6,8 @@ import {
     updateCartService,
     updateQuantityService,
     deleteProductService,
-    deleteAllProductService
+    deleteAllProductService,
+    purchaseCartService
 } from "../services/carts.services.js"
 import { getProductByIdService } from "../services/products.services.js";
 
@@ -126,6 +127,25 @@ const deleteAllProduct = async (req, res) => {
     
 }
 
+const purchaseCart = async (req,res) => {
+    try {
+        
+        const cartID = req.params.cid;
+        const cart = await getCartByIdService(cartID)
+        if (!cart) {
+            return res.status(400).send({ error: 'Carrito no encontrado' });
+        }
+        if (cart.product === []) {
+            return res.status(400).send({ error: 'Carrito vacio' });
+        }
+        const result = await purchaseCartService(req.user, cart);
+        res.sendSuccess(result);   
+
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
 export {
     getCarts,
     getCartById,
@@ -134,5 +154,6 @@ export {
     updateCart,
     updateQuantity,
     deleteProduct,
-    deleteAllProduct
+    deleteAllProduct,
+    purchaseCart
 }
