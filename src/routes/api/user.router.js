@@ -1,8 +1,9 @@
 import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js"
 import { callBackGithub, loginGithub, loginUser, registerUser, userCurrent } from "../../controllers/users.controllers.js"
+import toAsyncRouter from "async-express-decorator";
 
-export default class UsersRouter extends Router {
+class UsersRouter extends Router {
     init() {
         this.post("/login", ["PUBLIC"], passportStrategiesEnum.NOTHING, loginUser);
         this.post("/register", ["PUBLIC"], passportStrategiesEnum.NOTHING, registerUser);
@@ -15,21 +16,5 @@ export default class UsersRouter extends Router {
     };
 }
 
-// export default class SessionsRouter extends Router {
-//     init() {
-//         this.get("/login", ["PUBLIC"], (req, res) => {
-//             try {
-//                 const user = {
-//                     email: req.body.email,
-//                     role: "USER"
-//                 }
-
-//                 const token = jwt.sign(user, "secretCoder")
-//                 res.sendSuccess({ token })
-
-//             } catch (error) {
-//                 res.sendServerError(error.message)
-//             }
-//         })
-//     }
-// }
+const asyncUserRouter = toAsyncRouter(new UsersRouter());
+export default asyncUserRouter

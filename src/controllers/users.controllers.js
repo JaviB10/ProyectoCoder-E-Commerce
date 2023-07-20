@@ -1,4 +1,7 @@
 import UsersDTO from "../dao/DTOs/users.dto.js";
+import CustomError from "../middleware/errors/customError.js";
+import EErrors from "../middleware/errors/enums.js";
+import { generateUserErrorInfo } from "../middleware/errors/info.js";
 import { saveCartService } from "../services/carts.services.js";
 import { 
     deleteUserService,
@@ -57,27 +60,37 @@ const loginUser = async (req, res) => {
 }
 
 const registerUser = async (req, res) => {
-    try {
-        const { name, last_name, phone, age, email, password } = req.body;
-        const user = new UsersDTO({name, last_name, phone})
-        if (!name || !last_name || !age || !email || !password) {
-            return res.sendClientError("Incomplete values");
-        }
-        const exists = await getUserByEmailService(email);
-        if (exists) {
-            return res.sendClientError("Incomplete values");
-        }    
-        const hashedPassword = createHash(password);
-        const newCart = await saveCartService({ products: [] });
-        const newUser = {
-            ...req.body,...user, cart: newCart._id
-        }
-        newUser.password = hashedPassword
-        const result = await saveUserService(newUser);
-        res.sendSuccess(result);
-    } catch (error) {
-        res.sendServerError(error.message);
+    const { name, last_name, phone, age, email, password } = req.body;
+    const user = new UsersDTO({name, last_name, phone})
+    if (!name || !last_name || !age || !email || !password) {
+        throw CustomError.createError({
+            name: "UserError",
+            cause: generateUserErrorInfo({
+                name,
+                last_name,
+                age,
+                email,
+                password
+            }),
+            message: "Error trying to create user",
+            code: EErrors.INVALID_TYPE_ERROR
+        })
     }
+    const exists = await getUserByEmailService(email);
+    if (exists) {
+        return res.sendClientError("Incomplete values");
+    }    
+    const hashedPassword = createHash(password);
+    const newCart = await saveCartService({ products: [] });
+    const newUser = {
+        ...req.body,...user, cart: newCart._id
+    }
+    newUser.password = hashedPassword
+    const result = await saveUserService(newUser);
+    res.send({
+        status: "success",
+        payload: result
+    });
 }
 
 const userCurrent = async (req,res) => {

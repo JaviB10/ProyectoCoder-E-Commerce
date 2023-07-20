@@ -2,6 +2,7 @@ import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js";
 import { getProductById, getProductsPaginate } from "../../controllers/product.controllers.js";
 import { getCartById } from "../../controllers/carts.controllers.js";
+import { generateProduct } from "../../utils.js";
 
 export default class ViewsRouter extends Router {
     init() {
@@ -19,6 +20,19 @@ export default class ViewsRouter extends Router {
         this.get('/products', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductsPaginate);
         this.get("/products/:pid", ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductById)
         this.get('/carts/:cid', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getCartById);
+        this.get("/mocking-products", ["PUBLIC"], passportStrategiesEnum.NOTHING, (req, res) => {
+            try {
+                const products = [];
+
+                for (let i = 0; i < 100; i++) {
+                    products.push(generateProduct());
+                }
+
+                res.sendSuccess(products);
+            } catch (error) {
+                res.sendServerError(error.message);
+            }
+        })
     }
 }
 

@@ -1,3 +1,6 @@
+import CustomError from "../middleware/errors/customError.js";
+import EErrors from "../middleware/errors/enums.js";
+import { generateProductErrorInfo } from "../middleware/errors/info.js";
 import { 
     getProductsService,
     getProductsPaginateService,
@@ -65,19 +68,31 @@ const getProductById = async (req, res) => {
 }
 
 const saveProduct = async (req, res) => {
-    try {
-        const product = req.body;
-        if (product.status === null || product.status === undefined) {
-            product.status = true;
-        }
-        if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
-            return res.sendClientError("Incomplete values");
-        }
-        const result = await saveProductService(product);
-        res.sendSuccess(result);
-    } catch (error) {
-        res.sendServerError(error.message);
+    const product = req.body;
+    if (product.status === null || product.status === undefined) {
+        product.status = true;
     }
+    if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
+        throw CustomError.createError({
+            name: "ProductError",
+            cause: generateProductErrorInfo({
+                title,
+                description,
+                code,
+                price,
+                stock,
+                category,
+                thumbnail
+            }),
+            message: "Error trying to create product",
+            code: EErrors.INVALID_TYPE_ERROR
+        })
+    }
+    const result = await saveProductService(product);
+    res.send({
+        status: "success",
+        payload: result
+    });
 }
 
 const updateProduct = async (req, res) => {

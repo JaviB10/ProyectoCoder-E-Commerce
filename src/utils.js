@@ -3,6 +3,23 @@ import { dirname } from "path";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { PRIVATE_KEY } from "./config/contants.js";
+import { faker } from "@faker-js/faker"
+
+faker.locale = "es";
+
+export const generateProduct = () => {
+    return {
+        title: faker.commerce.productName(),
+        description: faker.commerce.productDescription(),
+        code: faker.random.alphaNumeric(10),
+        price: faker.commerce.price(),
+        status: true,
+        category: faker.commerce.department(),
+        stock: faker.random.numeric(1),
+        thumbnail: faker.image.image(),
+        id: faker.database.mongodbObjectId()
+    }
+}
 
 export const generateToken = (user) => {
     const token = jwt.sign({ user }, PRIVATE_KEY, { expiresIn: "24h" })
@@ -16,3 +33,4 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export default __dirname;
+
