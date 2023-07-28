@@ -22,3 +22,15 @@ export const generateUserErrorInfo = (user) => {
     * password: needs to be a string, received ${user.password}
     `
 }
+
+export const generateUserErrorExist = (user) => {
+    return `Email ${user.email} is already registered.`
+}
+
+export const generateUserErrorNotExist = (user) => {
+    return `Email ${user.email} is not registered.`
+}
+
+export const generateUserErrorPassword = (user) => {
+    return `The password ${user.password} is incorrect.`
+}

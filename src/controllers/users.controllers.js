@@ -1,13 +1,13 @@
 import UsersDTO from "../dao/DTOs/users.dto.js";
 import CustomError from "../middleware/errors/customError.js";
 import EErrors from "../middleware/errors/enums.js";
-import { generateUserErrorInfo } from "../middleware/errors/info.js";
+import { generateUserErrorExist, generateUserErrorInfo, generateUserErrorNotExist, generateUserErrorPassword } from "../middleware/errors/info.js";
 import { saveCartService } from "../services/carts.services.js";
-import { 
+import {
     deleteUserService,
     getUserByEmailService,
     getUserByIdService,
-    getUsersService, 
+    getUsersService,
     saveUserService,
     updateUserService
 } from "../services/users.services.js"
@@ -43,26 +43,48 @@ const getUserByEmail = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await getUserByEmailService(email);
-        const comparePassword = isValidPassword(user, password);
-        if (!comparePassword) {
-            return res.sendClientError("Incorrect credentials");
-        }
-        const accessToken = generateToken(user)
-        return res.cookie(
-            'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
-        ).sendSuccess({ accessToken });
-    } catch (error) {
-        res.sendServerError(error.message);
+    const { email, password } = req.body;
+    const logger = req.logger
+    const user = await getUserByEmailService(email);
+    if (!user) {
+        logger.error("No se encontro al usuario")
+        throw CustomError.createError({
+            name: "UserError",
+            cause: generateUserErrorNotExist({
+                email
+            }),
+            message: "Error trying to login",
+            code: EErrors.USER_NOT_FOUND
+        })
     }
+    const comparePassword = isValidPassword(user, password);
+    if (!comparePassword) {
+        logger.error("Contraseña incorrecta")
+        throw CustomError.createError({
+            name: "UserError",
+            cause: generateUserErrorPassword({
+                password
+            }),
+            message: "Error trying to login",
+            code: EErrors.INVALID_TYPE_ERROR
+        })
+    }
+    const accessToken = generateToken(user)
+    logger.info("Usuario correcto")
+    return res.cookie(
+        'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
+    ).send({ 
+        status: "success",
+        payload: accessToken 
+    });
 }
 
 const registerUser = async (req, res) => {
+    const logger = req.logger
     const { name, last_name, phone, age, email, password } = req.body;
-    const user = new UsersDTO({name, last_name, phone})
+    const user = new UsersDTO({ name, last_name, phone })
     if (!name || !last_name || !age || !email || !password) {
+        logger.error("No se recibieron todos los datos necesarios")
         throw CustomError.createError({
             name: "UserError",
             cause: generateUserErrorInfo({
@@ -78,22 +100,31 @@ const registerUser = async (req, res) => {
     }
     const exists = await getUserByEmailService(email);
     if (exists) {
-        return res.sendClientError("Incomplete values");
-    }    
+        logger.warning("El email ingresado ya se encuentra registrado")
+        throw CustomError.createError({
+            name: "UserError",
+            cause: generateUserErrorExist({
+                email
+            }),
+            message: "Error trying to create user",
+            code: EErrors.INVALID_TYPE_ERROR
+        })
+    }
     const hashedPassword = createHash(password);
     const newCart = await saveCartService({ products: [] });
     const newUser = {
-        ...req.body,...user, cart: newCart._id
+        ...req.body, ...user, cart: newCart._id
     }
     newUser.password = hashedPassword
     const result = await saveUserService(newUser);
+    logger.info("El usuario se registro correctamente")
     res.send({
         status: "success",
         payload: result
     });
 }
 
-const userCurrent = async (req,res) => {
+const userCurrent = async (req, res) => {
     try {
         const result = new UsersDTO(req.user)
         res.sendSuccess(result);

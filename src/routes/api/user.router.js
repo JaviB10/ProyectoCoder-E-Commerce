@@ -1,9 +1,9 @@
 import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js"
 import { callBackGithub, loginGithub, loginUser, registerUser, userCurrent } from "../../controllers/users.controllers.js"
-import toAsyncRouter from "async-express-decorator";
 
-class UsersRouter extends Router {
+
+export default class UsersRouter extends Router {
     init() {
         this.post("/login", ["PUBLIC"], passportStrategiesEnum.NOTHING, loginUser);
         this.post("/register", ["PUBLIC"], passportStrategiesEnum.NOTHING, registerUser);
@@ -16,5 +16,3 @@ class UsersRouter extends Router {
     };
 }
 
-const asyncUserRouter = toAsyncRouter(new UsersRouter());
-export default asyncUserRouter

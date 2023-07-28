@@ -1,0 +1,11 @@
+{"level":"fatal","message":"Prueba fatal"}
+{"level":"error","message":"Prueba error"}
+{"level":"fatal","message":"Prueba fatal"}
+{"level":"error","message":"Prueba error"}
+{"level":"fatal","message":"Prueba fatal"}
+{"level":"error","message":"Prueba error"}
+{"level":"error","message":"No se encontro al usuario"}
+{"level":"error","message":"No se proporcionaron todos los datos"}
+{"level":"error","message":"No se recibieron todos los datos necesarios"}
+{"level":"error","message":"No se recibieron todos los datos necesarios"}
+{"level":"error","message":"Ocurrio un error 400"}

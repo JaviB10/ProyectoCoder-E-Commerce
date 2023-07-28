@@ -17,5 +17,6 @@ export default {
     idGitHub: process.env.ID_GITHUB,
     secretGitHub: process.env.SECRET_GITHUB,
     passDefault: process.env.PASS_DEFAULT,
+    entorno: process.env.ENT,
     persistence,
 }
