@@ -22,7 +22,7 @@ const customLevelOptions = {
     }
 }
 
-let logger;
+export let logger;
 
 if (enviroment === "PRODUCTION") {
     logger = winston.createLogger({
@@ -63,7 +63,6 @@ if (enviroment === "PRODUCTION") {
 }
 
 export const addLogger = (req, res, next) => {
-    req.logger = logger
-    req.logger.http(`${req.method} en ${req.url} - ${new Date().toISOString()}`)
+    logger.http(`${req.method} en ${req.url} - ${new Date().toISOString()}`)
     next()
 }

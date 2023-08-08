@@ -1,8 +1,9 @@
 import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js";
-import { getProductById, getProductsPaginate } from "../../controllers/product.controllers.js";
+import { getProductById, getProductsPaginate, getNewProduct } from "../../controllers/product.controllers.js";
 import { getCartById } from "../../controllers/carts.controllers.js";
 import { generateProduct } from "../../utils.js";
+import { getResetPassword, getReset } from "../../controllers/users.controllers.js";
 
 export default class ViewsRouter extends Router {
     init() {
@@ -20,6 +21,9 @@ export default class ViewsRouter extends Router {
         this.get('/products', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductsPaginate);
         this.get("/products/:pid", ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductById)
         this.get('/carts/:cid', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getCartById);
+        this.get('/reset', ['PUBLIC'], passportStrategiesEnum.NOTHING, getResetPassword);
+        this.get('/reset-password', ['PUBLIC'], passportStrategiesEnum.NOTHING, getReset);
+        this.get('/new-product', ['ADMIN', 'PREMIUM'], passportStrategiesEnum.JWT, getNewProduct);
         this.get("/mocking-products", ["PUBLIC"], passportStrategiesEnum.NOTHING, (req, res) => {
             try {
                 const products = [];

@@ -124,11 +124,16 @@ const deleteOneProduct = async (req, res) => {
     }
 }
 
+const getNewProduct = async (req, res) => {
+    res.render("new-product")
+}
+
 export {
     getProducts,
     getProductsPaginate,
     getProductById,
     saveProduct,
     updateProduct,
-    deleteOneProduct
+    deleteOneProduct,
+    getNewProduct
 }

@@ -8,10 +8,13 @@ import {
     getUserByEmailService,
     getUserByIdService,
     getUsersService,
+    login,
+    resetPasswordService,
     saveUserService,
     updateUserService
 } from "../services/users.services.js"
 import { createHash, generateToken, isValidPassword } from "../utils.js";
+import { logger } from "../logger.js";
 
 const getUsers = async (req, res) => {
     try {
@@ -44,7 +47,6 @@ const getUserByEmail = async (req, res) => {
 
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
-    const logger = req.logger
     const user = await getUserByEmailService(email);
     if (!user) {
         logger.error("No se encontro al usuario")
@@ -57,19 +59,9 @@ const loginUser = async (req, res) => {
             code: EErrors.USER_NOT_FOUND
         })
     }
-    const comparePassword = isValidPassword(user, password);
-    if (!comparePassword) {
-        logger.error("Contraseña incorrecta")
-        throw CustomError.createError({
-            name: "UserError",
-            cause: generateUserErrorPassword({
-                password
-            }),
-            message: "Error trying to login",
-            code: EErrors.INVALID_TYPE_ERROR
-        })
-    }
-    const accessToken = generateToken(user)
+
+    const accessToken = await login(password, user);
+
     logger.info("Usuario correcto")
     return res.cookie(
         'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
@@ -78,11 +70,28 @@ const loginUser = async (req, res) => {
         payload: accessToken 
     });
 }
+const resetPass = async (req, res) => {
+    const { email } = req.body;
+    const user = await getUserByEmailService(email);
+    if (!user) {
+        logger.error("No se encontro al usuario")
+        throw CustomError.createError({
+            name: "UserError",
+            cause: generateUserErrorNotExist({
+                email
+            }),
+            message: "Error trying to login",
+            code: EErrors.USER_NOT_FOUND
+        })
+    }
+    const accessToken = await resetPasswordService(user);
+    res.sendSuccess({ accessToken });
+}
 
 const registerUser = async (req, res) => {
-    const logger = req.logger
     const { name, last_name, phone, age, email, password } = req.body;
-    const user = new UsersDTO({ name, last_name, phone })
+    const user = new UsersDTO({ name, last_name, phone, age, email, password })
+
     if (!name || !last_name || !age || !email || !password) {
         logger.error("No se recibieron todos los datos necesarios")
         throw CustomError.createError({
@@ -113,8 +122,9 @@ const registerUser = async (req, res) => {
     const hashedPassword = createHash(password);
     const newCart = await saveCartService({ products: [] });
     const newUser = {
-        ...req.body, ...user, cart: newCart._id
+        ...req.body, cart: newCart._id
     }
+    
     newUser.password = hashedPassword
     const result = await saveUserService(newUser);
     logger.info("El usuario se registro correctamente")
@@ -123,7 +133,25 @@ const registerUser = async (req, res) => {
         payload: result
     });
 }
+const updatePassword = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await getUserByEmailService(email);
+        const comparePassword = isValidPassword(user, password);
 
+        if (comparePassword) {
+            throw Error
+        }
+
+        const hashedPassword = createHash(password);
+        user.password = hashedPassword
+        const uid = user._id
+        const result = await updateUserService(uid, user)
+        res.sendSuccess(result);
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
 const userCurrent = async (req, res) => {
     try {
         const result = new UsersDTO(req.user)
@@ -143,6 +171,8 @@ const updateUser = async (req, res) => {
         res.sendServerError(error.message);
     }
 }
+
+
 
 const deleteUser = async (req, res) => {
     try {
@@ -166,6 +196,13 @@ const callBackGithub = async (req, res) => {
     res.redirect('/')
 }
 
+const getResetPassword = async (req, res) => {
+    res.render("reset")
+}
+const getReset = async (req, res) => {
+    res.render("reset-password")
+}
+
 export {
     getUsers,
     getUserById,
@@ -176,5 +213,9 @@ export {
     loginUser,
     loginGithub,
     callBackGithub,
-    userCurrent
+    userCurrent,
+    getResetPassword,
+    resetPass,
+    getReset,
+    updatePassword
 }

@@ -1,8 +1,9 @@
 import { cartModel } from "./models/carts.model.js";
+import { logger } from "../../logger.js";
 
 export default class Carts {
     constructor() {
-        console.log("Working carts with DB");
+        logger.info("Working carts with DB");
     }
 
     newCart = async () => {

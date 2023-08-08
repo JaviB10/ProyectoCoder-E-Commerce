@@ -14,7 +14,7 @@ import cookieParser from "cookie-parser";
 import "./dao/factory.js"
 import config from "./config/config.js";
 import errorHandler from "./middleware/errors/index.js"
-import { addLogger } from "./logger.js";
+import { addLogger, logger } from "./logger.js";
 
 const productsRouter = new routerProducts()
 const cartsRouter = new routerCarts()
@@ -24,7 +24,7 @@ const ticketsRouter = new routerTickets()
 
 const app = express();
 
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(express.static(`${__dirname}/public`))
 app.use(cookieParser())
 app.use(express.json())
@@ -45,7 +45,31 @@ app.use("/api/users", usersRouter.getRouter());
 app.use("/api/ticket", ticketsRouter.getRouter());
 app.use(errorHandler);
 
+app.get("/faker", async (req, res) => {
+    const user = {
+        name: faker.name.firstName(),
+        lastname: faker.name.lastName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+    };
 
+    res.send(user);
+});
+app.get("/operacionsencilla", (req, res) => {
+    let sum = 0;
+    for (let i = 0; i < 1000000; i++) {
+        sum += i;
+    }
+    res.send({ message: "Operación sencilla", result: sum });
+});
+
+app.get("/operacioncompleja", (req, res) => {
+    let sum = 0;
+    for (let i = 0; i < 5e8; i++) {
+        sum += i;
+    }
+    res.send({ message: "Operación compleja", result: sum });
+});
 app.get('/loggerTest', (req, res) => {
     //default levels
     req.logger.fatal('Prueba fatal');
@@ -57,8 +81,9 @@ app.get('/loggerTest', (req, res) => {
 });
 
 const port = Number(config.port)
-const server = app.listen(port, (req) => {
-    console.log(`Server running on port ${port}`)
+const server = app.listen(port, () => {
+
+    logger.info(`Server running on port ${port}`)
 })
 
 const io = new Server(server);
