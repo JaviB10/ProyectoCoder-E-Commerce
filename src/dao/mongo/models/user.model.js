@@ -15,13 +15,15 @@ const userSchema = new mongoose.Schema({
     },
     age: Number,
     password: String,
+    role: {
+        type: String,
+        enum: ['ADMIN', 'USER', 'PREMIUM'],
+        required: true,
+        default: 'USER'
+    },
     cart: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "carts"
-    },
-    role: {
-        type: String,
-        default: "USER"
     }
 
 })

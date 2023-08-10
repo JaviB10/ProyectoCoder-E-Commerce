@@ -9,7 +9,9 @@ import {
     deleteAllProductService,
     purchaseCartService
 } from "../services/carts.services.js"
-import { getProductByIdService } from "../services/products.services.js";
+import { getProductByIdOneService, getProductByIdService } from "../services/products.services.js";
+import { getUserByIdService } from "../services/users.services.js";
+
 
 const getCarts = async (req, res) => {
     try {
@@ -45,13 +47,16 @@ const saveCart = async (req, res) => {
 const addProductToCart = async (req, res) => {
     try {
         const { cid, pid } = req.params;
-        const productFound = await getProductByIdService(pid);
+        const productFound = await getProductByIdOneService(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");
         }
         const cartFound = await getCartByIdService(cid)
         if (!cartFound) {
             return res.sendClientError("Cart not found");
+        }
+        if (productFound.owner === req.user.email && req.user.role === "PREMIUM") {
+            throw Error
         }
         const result = await addProductToCartService(cid, pid);
         res.sendSuccess(result);

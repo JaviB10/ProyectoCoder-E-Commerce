@@ -1,25 +1,16 @@
-const postButtons = document.getElementsByClassName("addBtn");
-const user = document.getElementById('userInfo')
-const cid = user.dataset.cid;
-const uid = user.dataset.uid;
+const deleteButton = document.getElementById("addBtnDelete");
 
+deleteButton.addEventListener(`click`, () => {
 
-for (let i = 0; i < postButtons.length; i++) {
-    const postButton = postButtons[i];
-    postButton.addEventListener(`click`, () => {
+    const pid = deleteButton.dataset.pid; 
+    console.log(pid);
 
-    const pid = postButton.dataset.pid; 
-    const data = {
-        uid: uid
-    };
-    const url = `http://localhost:8081/api/carts/${cid}/product/${pid}`;
-    console.log(url);
+    const url = `http://localhost:8081/api/products/${pid}`;
     fetch(url, {
-    method: "POST",
+    method: "DELETE",
     headers: {
         "Content-Type": "application/json"
-        },
-    body: JSON.stringify(data)
+        }
     })
     .then(response => {
     if (response.ok) {
@@ -49,5 +40,4 @@ for (let i = 0; i < postButtons.length; i++) {
     .catch(error => {
         console.error("Error al realizar la solicitud POST:", error);
     });
-});
-}
+})

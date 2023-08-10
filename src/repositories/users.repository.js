@@ -22,8 +22,7 @@ export default class UsersRepository {
     }
     
     saveUserRepository = async (user) => {
-        const contactToInsert = new UsersDTO(user);
-        const result = await this.dao.save(contactToInsert);
+        const result = await this.dao.save(user);
         return result;
     }
     

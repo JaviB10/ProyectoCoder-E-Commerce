@@ -18,6 +18,10 @@ export default class Products {
         return await productModel.find({_id:pid}).lean();
     }
 
+    getProductByIdOne = async (pid) => {
+        return await productModel.findOne({_id:pid}).lean();
+    }
+
     save = async (product) => {
         return await productModel.create(product);
     }
@@ -27,6 +31,6 @@ export default class Products {
     }
 
     delete = async (pid) => {
-        return await productModel.deleteOne(pid);
+        return await productModel.deleteOne({_id:pid});
     }
 }

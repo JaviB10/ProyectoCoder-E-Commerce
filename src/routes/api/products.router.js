@@ -4,10 +4,10 @@ import { deleteOneProduct, getProductById, getProducts, saveProduct, updateProdu
 
 export default class ProductsRouter extends Router {
     init() {
-        this.get("/", ["ADMIN", "USER"], passportStrategiesEnum.JWT, getProducts)
-        this.get("/:pid", ["ADMIN", "USER"], passportStrategiesEnum.JWT, getProductById)
+        this.get("/", ["ADMIN", "USER", "PREMIUM"], passportStrategiesEnum.JWT, getProducts)
+        this.get("/:pid", ["ADMIN", "USER", "PREMIUM"], passportStrategiesEnum.JWT, getProductById)
         this.post("/", ["ADMIN", "PREMIUM"], passportStrategiesEnum.JWT, saveProduct)
-        this.put("/:pid", ["ADMIN", "USER"], passportStrategiesEnum.JWT, updateProduct)
-        this.delete("/:pid", ["ADMIN", "USER"], passportStrategiesEnum.JWT, deleteOneProduct)
+        this.put("/:pid", ["ADMIN", "PREMIUM"], passportStrategiesEnum.JWT, updateProduct)
+        this.delete("/:pid", ["ADMIN", "PREMIUM"], passportStrategiesEnum.JWT, deleteOneProduct)
     }
 }

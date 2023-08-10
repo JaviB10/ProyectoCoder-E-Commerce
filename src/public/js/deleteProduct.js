@@ -11,7 +11,6 @@ for (let i = 0; i < deleteProductBtn.length; i++) {
     const pid = deleteProduct.dataset.pid; 
 
     const url = `http://localhost:8081/api/carts/${cid}/product/${pid}`;
-    console.log(url);
     fetch(url, {
     method: "DELETE",
     headers: {

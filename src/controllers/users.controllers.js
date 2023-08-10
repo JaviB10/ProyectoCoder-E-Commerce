@@ -9,9 +9,11 @@ import {
     getUserByIdService,
     getUsersService,
     login,
-    resetPasswordService,
+    passwordLinkService,
+    passwordResetService,
     saveUserService,
-    updateUserService
+    updateUserService,
+    verificarTokenService
 } from "../services/users.services.js"
 import { createHash, generateToken, isValidPassword } from "../utils.js";
 import { logger } from "../logger.js";
@@ -70,22 +72,27 @@ const loginUser = async (req, res) => {
         payload: accessToken 
     });
 }
-const resetPass = async (req, res) => {
-    const { email } = req.body;
-    const user = await getUserByEmailService(email);
-    if (!user) {
-        logger.error("No se encontro al usuario")
-        throw CustomError.createError({
-            name: "UserError",
-            cause: generateUserErrorNotExist({
-                email
-            }),
-            message: "Error trying to login",
-            code: EErrors.USER_NOT_FOUND
-        })
+const passwordLink = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await getUserByEmailService(email);
+        if (!user) {
+            logger.error("No se encontro al usuario")
+            throw CustomError.createError({
+                name: "UserError",
+                cause: generateUserErrorNotExist({
+                    email
+                }),
+                message: "Error trying to login",
+                code: EErrors.USER_NOT_FOUND
+            })
+        }
+        const accessToken = await passwordLinkService(user);
+        res.sendSuccess({ accessToken });
+    } catch (error) {
+        res.sendServerError(error.message);
     }
-    const accessToken = await resetPasswordService(user);
-    res.sendSuccess({ accessToken });
+    
 }
 
 const registerUser = async (req, res) => {
@@ -121,10 +128,11 @@ const registerUser = async (req, res) => {
     }
     const hashedPassword = createHash(password);
     const newCart = await saveCartService({ products: [] });
+    console.log(newCart);
     const newUser = {
-        ...req.body, cart: newCart._id
+        ...req.body, role: "USER", cart: newCart._id
     }
-    
+    console.log(newUser);
     newUser.password = hashedPassword
     const result = await saveUserService(newUser);
     logger.info("El usuario se registro correctamente")
@@ -133,21 +141,14 @@ const registerUser = async (req, res) => {
         payload: result
     });
 }
-const updatePassword = async (req, res) => {
+const passwordReset = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        const user = await getUserByEmailService(email);
-        const comparePassword = isValidPassword(user, password);
-
-        if (comparePassword) {
-            throw Error
+        const { password, token } = req.body;
+        const user = await verificarTokenService(token);
+        if (user) {
+            const result = await passwordResetService(user, password)
+            res.sendSuccess(result);
         }
-
-        const hashedPassword = createHash(password);
-        user.password = hashedPassword
-        const uid = user._id
-        const result = await updateUserService(uid, user)
-        res.sendSuccess(result);
     } catch (error) {
         res.sendServerError(error.message);
     }
@@ -196,11 +197,36 @@ const callBackGithub = async (req, res) => {
     res.redirect('/')
 }
 
-const getResetPassword = async (req, res) => {
-    res.render("reset")
+const getPasswordLink = async (req, res) => {
+    res.render("password-link")
 }
-const getReset = async (req, res) => {
-    res.render("reset-password")
+const getPasswordReset = async (req, res) => {
+    const { token = "" } = req.query
+    res.render("password-reset", { token })
+}
+
+const userToPremium = async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        const user = await getUserByIdService(uid);
+        if (user.role === "ADMIN") {
+            res.sendClientError('not change role, admin user');
+        } 
+        if (user.role === "USER") {
+            user.role = "PREMIUM"
+            const result = await updateUserService(user._id, user);
+            req.logger.info('Role change successfully');
+            res.sendSuccess(result);
+        } else {
+            user.role = "USER"
+            const result = await updateUserService(user._id, user);
+            req.logger.info('Role change successfully');
+            res.sendSuccess(result);
+        }
+        
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
 }
 
 export {
@@ -214,8 +240,9 @@ export {
     loginGithub,
     callBackGithub,
     userCurrent,
-    getResetPassword,
-    resetPass,
-    getReset,
-    updatePassword
+    getPasswordLink,
+    passwordLink,
+    getPasswordReset,
+    passwordReset,
+    userToPremium
 }

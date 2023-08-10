@@ -3,7 +3,7 @@ import { passportStrategiesEnum } from "../../config/enums.js";
 import { getProductById, getProductsPaginate, getNewProduct } from "../../controllers/product.controllers.js";
 import { getCartById } from "../../controllers/carts.controllers.js";
 import { generateProduct } from "../../utils.js";
-import { getResetPassword, getReset } from "../../controllers/users.controllers.js";
+import { getPasswordLink, getPasswordReset } from "../../controllers/users.controllers.js";
 
 export default class ViewsRouter extends Router {
     init() {
@@ -18,11 +18,11 @@ export default class ViewsRouter extends Router {
         this.get('/', ['PUBLIC'], passportStrategiesEnum.NOTHING, (req, res) => {
             res.redirect('/login');
         });
-        this.get('/products', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductsPaginate);
-        this.get("/products/:pid", ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getProductById)
-        this.get('/carts/:cid', ['ADMIN', 'USER'], passportStrategiesEnum.JWT, getCartById);
-        this.get('/reset', ['PUBLIC'], passportStrategiesEnum.NOTHING, getResetPassword);
-        this.get('/reset-password', ['PUBLIC'], passportStrategiesEnum.NOTHING, getReset);
+        this.get('/products', ['ADMIN', 'USER', "PREMIUM"], passportStrategiesEnum.JWT, getProductsPaginate);
+        this.get("/products/:pid", ['ADMIN', 'USER', "PREMIUM"], passportStrategiesEnum.JWT, getProductById)
+        this.get('/carts/:cid', ['ADMIN', 'USER', "PREMIUM"], passportStrategiesEnum.JWT, getCartById);
+        this.get('/password-link', ['PUBLIC'], passportStrategiesEnum.NOTHING, getPasswordLink);
+        this.get('/password-reset', ['PUBLIC'], passportStrategiesEnum.NOTHING, getPasswordReset);
         this.get('/new-product', ['ADMIN', 'PREMIUM'], passportStrategiesEnum.JWT, getNewProduct);
         this.get("/mocking-products", ["PUBLIC"], passportStrategiesEnum.NOTHING, (req, res) => {
             try {

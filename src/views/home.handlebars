@@ -27,7 +27,7 @@
             <li>Stock: {{this.stock}}</li>
             <li>Category: {{this.category}}</li>
             <button onclick="ver('{{this._id}}')">View Product</button>
-            <button data-pid="{{this._id}}" class="addBtn">Add to Cart</button>
+            <button data-pid="{{this._id}}" data-uid="{{user._id}}" class="addBtn">Add to Cart</button>
         </ul>
     {{/each}}
 

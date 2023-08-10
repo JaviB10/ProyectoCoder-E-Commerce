@@ -19,7 +19,12 @@ export default class ProductsRepository {
         const product = await this.dao.getProductById(pid);
         return product;
     }
-    
+
+    getProductByIdOneRepository = async (pid) => {
+        const product = await this.dao.getProductByIdOne(pid);
+        return product;
+    }
+
     saveProductRepository = async (product) => {
         const result = await this.dao.save(product);
         return result;

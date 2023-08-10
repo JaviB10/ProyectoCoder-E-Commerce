@@ -17,6 +17,11 @@ const getProductByIdService = async (pid) => {
     return product;
 }
 
+const getProductByIdOneService = async (pid) => {
+    const product = await productsRepository.getProductByIdOneRepository(pid);
+    return product;
+}
+
 const saveProductService = async (product) => {
     const result = await productsRepository.saveProductRepository(product);
     return result;
@@ -32,10 +37,13 @@ const deleteOneProductService = async (pid) => {
     return result;
 }
 
+
+
 export {
     getProductsService,
     getProductsPaginateService,
     getProductByIdService,
+    getProductByIdOneService,
     saveProductService,
     updateProductService,
     deleteOneProductService

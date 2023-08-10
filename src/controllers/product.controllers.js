@@ -7,7 +7,8 @@ import {
     getProductByIdService,
     saveProductService,
     updateProductService,
-    deleteOneProductService
+    deleteOneProductService,
+    getProductByIdOneService
 } from "../services/products.services.js"
 
 const getProducts = async (req, res) => {
@@ -88,6 +89,11 @@ const saveProduct = async (req, res) => {
             code: EErrors.INVALID_TYPE_ERROR
         })
     }
+    if (!product.owner || product.owner.trim() === "") {
+        product.owner = "ADMIN";
+    } else if (product.owner && product.owner.trim() !== "") {
+        product.owner = req.user.email;
+    }
     const result = await saveProductService(product);
     res.send({
         status: "success",
@@ -113,9 +119,12 @@ const updateProduct = async (req, res) => {
 const deleteOneProduct = async (req, res) => {
     try {
         const pid = req.params.pid;
-        const productFound = await getProductById(pid);
+        const productFound = await getProductByIdOneService(pid);
         if (!productFound) {
             return res.sendClientError("Product not found");
+        }
+        if (productFound.owner !== req.user.email && req.user.role === "PREMIUM") {
+            throw Error
         }
         const result = await deleteOneProductService(pid);
         res.sendSuccess(result);

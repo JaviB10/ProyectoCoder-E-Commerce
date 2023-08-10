@@ -27,6 +27,16 @@ export const generateToken = (user) => {
     return token
 }
 
+export const generateTokenPassword = (user) => {
+    const token = jwt.sign({ user }, PRIVATE_KEY, { expiresIn: "1h" })
+    return token
+}
+
+export const validateToken = (token) => {
+    const decoded = jwt.verify(token, PRIVATE_KEY);
+    return decoded;
+};
+
 export const transporter = nodemailer.createTransport({
     service: 'gmail',
     port: 587,

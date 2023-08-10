@@ -1,7 +1,8 @@
 import { loginNotification } from "../custom-html.js";
 import UsersRepository from "../repositories/users.repository.js";
-import { createHash, generateToken, isValidPassword } from "../utils.js";
+import { createHash, generateToken, isValidPassword, validateToken } from "../utils.js";
 import { sendEmail } from "./email.service.js";
+
 const usersRepository = new UsersRepository();
 
 const getUsersService = async () => {
@@ -52,17 +53,35 @@ const login = async (password, user) => {
     return accessToken;
 }
 
-const resetPasswordService = async (user) => {
+const passwordLinkService = async (user) => {
     const accessToken = generateToken(user);
 
     const email = {
         to: user.email,
-        subject: 'Intento de login',
-        html: loginNotification
+        subject: 'Restablecimiento de contraseña',
+        html: loginNotification(accessToken)
     }
 
     await sendEmail(email)
+
     return accessToken
+}
+
+const verificarTokenService = async (token) => {
+    const validate = validateToken(token)
+    const { user } = validate
+    return user
+}
+
+const passwordResetService = async (user, password) => {
+    const comparePassword = isValidPassword(user, password);
+
+    if (comparePassword) {
+        throw Error
+    }
+    const hashedPassword = createHash(password);
+    user.password = hashedPassword
+    await updateUserService(user._id, user)
 }
 
 export {
@@ -73,5 +92,7 @@ export {
     updateUserService,
     deleteUserService,
     login,
-    resetPasswordService
+    passwordLinkService,
+    verificarTokenService,
+    passwordResetService
 }
