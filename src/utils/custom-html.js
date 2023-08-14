@@ -1,4 +1,4 @@
-import config from "./config/config.js"
+import config from "../config/config.js"
 const port = Number(config.port)
 
 export const loginNotification = (token) =>

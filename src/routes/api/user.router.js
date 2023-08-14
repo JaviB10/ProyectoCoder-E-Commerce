@@ -1,6 +1,6 @@
 import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js"
-import { callBackGithub, loginGithub, loginUser, registerUser, userCurrent, passwordLink, passwordReset, userToPremium } from "../../controllers/users.controllers.js"
+import { callBackGithub, loginGithub, loginUser, registerUser, userCurrent, passwordLink, passwordReset, userToPremium, userLogout } from "../../controllers/users.controllers.js"
 
 
 export default class UsersRouter extends Router {
@@ -9,9 +9,7 @@ export default class UsersRouter extends Router {
         this.post("/register", ["PUBLIC"], passportStrategiesEnum.NOTHING, registerUser);
         this.get('/github', ['PUBLIC'], passportStrategiesEnum.GITHUB, loginGithub)
         this.get('/github-callback', ['PUBLIC'], passportStrategiesEnum.GITHUB, callBackGithub)
-        this.get('/logout', ["PUBLIC"], passportStrategiesEnum.NOTHING, (req, res) => {
-            res.clearCookie("coderCookieToken").redirect('/login')
-        });
+        this.get('/logout', ['USER', 'ADMIN', 'PREMIUM'], passportStrategiesEnum.JWT, userLogout);
         this.get('/current', ['ADMIN','USER'], passportStrategiesEnum.JWT, userCurrent);
         this.post('/password-link', ['PUBLIC'], passportStrategiesEnum.NOTHING, passwordLink);
         this.post('/password-reset', ['PUBLIC'], passportStrategiesEnum.NOTHING, passwordReset);

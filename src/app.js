@@ -1,5 +1,5 @@
 import express from "express";
-import __dirname from "./utils.js";
+import __mainDirname from "./utils/utils.js";
 import routerProducts from "./routes/api/products.router.js";
 import routerCarts from "./routes/api/carts.router.js";
 import routerViews from './routes/web/views.router.js'
@@ -14,7 +14,9 @@ import cookieParser from "cookie-parser";
 import "./dao/factory.js"
 import config from "./config/config.js";
 import errorHandler from "./middleware/errors/index.js"
-import { addLogger, logger } from "./logger.js";
+import { addLogger, logger } from "./utils/logger.js";
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUiExpress from "swagger-ui-express"
 
 const productsRouter = new routerProducts()
 const cartsRouter = new routerCarts()
@@ -25,7 +27,7 @@ const ticketsRouter = new routerTickets()
 const app = express();
 
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static(`${__dirname}/public`))
+app.use(express.static(`${__mainDirname}/public`))
 app.use(cookieParser())
 app.use(express.json())
 
@@ -34,7 +36,7 @@ initializePassport();
 app.use(passport.initialize());
 
 app.engine("handlebars", handlebars.engine())
-app.set("views", `${__dirname}/views`)
+app.set("views", `${__mainDirname}/views`)
 app.set("view engine", "handlebars")
 
 app.use(addLogger);
@@ -44,6 +46,20 @@ app.use("/api/carts", cartsRouter.getRouter());
 app.use("/api/users", usersRouter.getRouter());
 app.use("/api/ticket", ticketsRouter.getRouter());
 app.use(errorHandler);
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.1',
+        info: {
+            title: 'Documentacion del proyecto',
+            description: 'API pensada para resolver el proceso de un ecommerce'
+        }
+    },
+    apis: [`${__mainDirname}/docs/**/*.yaml`]
+}
+
+const specs = swaggerJSDoc(swaggerOptions)
+app.use('/api/docs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 app.get("/faker", async (req, res) => {
     const user = {

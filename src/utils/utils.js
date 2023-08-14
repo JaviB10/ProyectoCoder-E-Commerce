@@ -1,8 +1,8 @@
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import path from "path";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { PRIVATE_KEY } from "./config/contants.js";
+import { PRIVATE_KEY } from '../config/contants.js';
 import { faker } from "@faker-js/faker"
 import nodemailer from "nodemailer"
 
@@ -50,7 +50,8 @@ export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSy
 export const isValidPassword = (user, password) => bcrypt.compareSync(password, user.password);
 
 const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+const __dirname = path.dirname(__filename)
+const __mainDirname = path.join(__dirname, "..")
 
-export default __dirname;
+export default __mainDirname;
 

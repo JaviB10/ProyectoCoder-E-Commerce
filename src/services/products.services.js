@@ -1,4 +1,5 @@
 import ProductsRepository from "../repositories/products.repository.js";
+import { CantDeleteProduct, ProductNotFound } from "../utils/custom-exceptions.js";
 
 const productsRepository = new ProductsRepository();
 
@@ -19,10 +20,21 @@ const getProductByIdService = async (pid) => {
 
 const getProductByIdOneService = async (pid) => {
     const product = await productsRepository.getProductByIdOneRepository(pid);
+    if (!product) {
+        throw new ProductNotFound('Product not found');
+    }
     return product;
 }
 
 const saveProductService = async (product) => {
+    if (product.status === null || product.status === undefined) {
+        product.status = true;
+    }
+    if (!product.owner || product.owner.trim() === "") {
+        product.owner = "ADMIN";
+    } else if (product.owner && product.owner.trim() !== "") {
+        product.owner = req.user.email;
+    }
     const result = await productsRepository.saveProductRepository(product);
     return result;
 }
@@ -32,12 +44,13 @@ const updateProductService = async (pid, product) => {
     return result;
 }
 
-const deleteOneProductService = async (pid) => {
+const deleteOneProductService = async (pid, productFound, user) => {
+    if (productFound.owner !== user.email && user.role === "PREMIUM") {
+        throw new CantDeleteProduct('User premium cant delete your product')
+    }
     const result = await productsRepository.deleteOneProductRepository(pid);
     return result;
 }
-
-
 
 export {
     getProductsService,

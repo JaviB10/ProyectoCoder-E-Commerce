@@ -1,5 +1,5 @@
 import { cartModel } from "./models/carts.model.js";
-import { logger } from "../../logger.js";
+import { logger } from "../../utils/logger.js";
 
 export default class Carts {
     constructor() {

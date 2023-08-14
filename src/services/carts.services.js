@@ -1,22 +1,17 @@
 import CartsRepository from "../repositories/carts.repository.js";
 import ProductsRepository from "../repositories/products.repository.js";
 import TicketsRepository from "../repositories/tickets.repository.js";
+import { CantAddProduct, CartNotFound } from "../utils/custom-exceptions.js";
 
 const cartsRepository = new CartsRepository();
 const productsRepository = new ProductsRepository();
 const ticketsRepository = new TicketsRepository();
 
-const newCartService = async () => {
-    return await CARTSDAO.newCart();
-}
-
-const getCartsService = async () => {
-    const carts = await cartsRepository.getCartsRepository();
-    return carts;
-}
-
 const getCartByIdService = async (cid) => {
     const cart = await cartsRepository.getCartByIdRepository(cid);
+    if (!cart) {
+        throw new CartNotFound('Cart not found')
+    }
     return cart;
 }
 
@@ -25,7 +20,10 @@ const saveCartService = async (cart) => {
     return result;
 }
 
-const addProductToCartService = async (cid, pid) => {
+const addProductToCartService = async (cid, pid, productFound, user) => {
+    if (productFound.owner === user.email && user.role === "PREMIUM") {
+        throw new CantAddProduct('The user cant be add product')
+    }
     const result = await cartsRepository.addProductToCartRepository(cid, pid);
     return result;
 }
@@ -67,7 +65,7 @@ const purchaseCartService = async (user, cart) => {
             productsSinStock.push(item);
         }
     }
- 
+
     const sum = productsConStock.reduce((acc, producto) => {
         acc += producto.product.price;
         console.log(acc);
@@ -81,7 +79,7 @@ const purchaseCartService = async (user, cart) => {
         amount: sum,
         purchaser: user.email,
     };
- 
+
     //actualizo el cart
     const produ = {products: productsSinStock};
     await cartsRepository.updateCartRepository(cart._id, produ);
@@ -97,8 +95,6 @@ const purchaseCartService = async (user, cart) => {
 }
 
 export {
-    newCartService,
-    getCartsService,
     getCartByIdService,
     saveCartService,
     addProductToCartService,

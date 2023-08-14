@@ -1,5 +1,5 @@
 import { productModel } from "./models/products.model.js";
-import { logger } from "../../logger.js";
+import { logger } from "../../utils/logger.js";
 
 export default class Products {
     constructor() {

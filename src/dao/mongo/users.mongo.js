@@ -1,5 +1,5 @@
 import { userModel } from "./models/user.model.js";
-import { logger } from "../../logger.js";
+import { logger } from "../../utils/logger.js";
 
 export default class Users {
     constructor() {

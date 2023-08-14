@@ -10,6 +10,7 @@ import {
     deleteOneProductService,
     getProductByIdOneService
 } from "../services/products.services.js"
+import { CantDeleteProduct, ProductNotFound } from "../utils/custom-exceptions.js";
 
 const getProducts = async (req, res) => {
     try {
@@ -58,60 +59,39 @@ const getProductById = async (req, res) => {
     try {
         const pid = req.params.pid;
         const productFound = await getProductByIdService(pid);
-        if (!productFound) {
-            return res.sendClientError("Product not found");
-        }
-        
         res.render("productDetails", {productFound, user: req.user})
     } catch (error) {
+        if (error instanceof ProductNotFound) {
+            return res.sendClientError(error.message);
+        }
         res.sendServerError(error.message);
     }
 }
 
 const saveProduct = async (req, res) => {
-    const product = req.body;
-    if (product.status === null || product.status === undefined) {
-        product.status = true;
+    try {
+        const product = req.body;
+        if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
+            return res.sendClientError('Incomplete values')
+        }
+        const result = await saveProductService(product);
+        res.sendSuccess(result)
+    } catch (error) {
+        res.sendServerError(error.message);
     }
-    if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
-        throw CustomError.createError({
-            name: "ProductError",
-            cause: generateProductErrorInfo({
-                title,
-                description,
-                code,
-                price,
-                stock,
-                category,
-                thumbnail
-            }),
-            message: "Error trying to create product",
-            code: EErrors.INVALID_TYPE_ERROR
-        })
-    }
-    if (!product.owner || product.owner.trim() === "") {
-        product.owner = "ADMIN";
-    } else if (product.owner && product.owner.trim() !== "") {
-        product.owner = req.user.email;
-    }
-    const result = await saveProductService(product);
-    res.send({
-        status: "success",
-        payload: result
-    });
 }
 
 const updateProduct = async (req, res) => {
     try {
         const pid = req.params.pid;
         const product = req.body;
-        const productFound = await getProductById(pid);
-        if (!productFound) {
-            return res.sendClientError("Product not found");
-        }
+        await getProductById(pid);
         const result = await updateProductService(pid, product);
         res.sendSuccess(result);
     } catch (error) {
+        if (error instanceof ProductNotFound) {
+            return res.sendClientError(error.message);
+        }
         res.sendServerError(error.message);
     }
 }
@@ -120,15 +100,15 @@ const deleteOneProduct = async (req, res) => {
     try {
         const pid = req.params.pid;
         const productFound = await getProductByIdOneService(pid);
-        if (!productFound) {
-            return res.sendClientError("Product not found");
-        }
-        if (productFound.owner !== req.user.email && req.user.role === "PREMIUM") {
-            throw Error
-        }
-        const result = await deleteOneProductService(pid);
+        const result = await deleteOneProductService(pid, productFound, req.user);
         res.sendSuccess(result);
     } catch (error) {
+        if (error instanceof ProductNotFound) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof CantDeleteProduct) {
+            return res.sendClientError(error.message);
+        }
         res.sendServerError(error.message);
     }
 }

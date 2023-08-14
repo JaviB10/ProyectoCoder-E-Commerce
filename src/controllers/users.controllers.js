@@ -1,146 +1,76 @@
 import UsersDTO from "../dao/DTOs/users.dto.js";
-import CustomError from "../middleware/errors/customError.js";
-import EErrors from "../middleware/errors/enums.js";
-import { generateUserErrorExist, generateUserErrorInfo, generateUserErrorNotExist, generateUserErrorPassword } from "../middleware/errors/info.js";
-import { saveCartService } from "../services/carts.services.js";
 import {
-    deleteUserService,
-    getUserByEmailService,
+    getUserByEmailLoginService,
+    getUserByEmailRegisterService,
     getUserByIdService,
-    getUsersService,
-    login,
+    loginService,
     passwordLinkService,
     passwordResetService,
-    saveUserService,
-    updateUserService,
+    registerService,
+    userToPremiumService,
     verificarTokenService
 } from "../services/users.services.js"
-import { createHash, generateToken, isValidPassword } from "../utils.js";
-import { logger } from "../logger.js";
+import { generateToken } from "../utils/utils.js";
+import { logger } from "../utils/logger.js";
+import { CantSwitchRoles, IncorrectLoginCredentials, IncorrectToken, UseNewPassword, UserAlreadyExists, UserNotFound } from "../utils/custom-exceptions.js";
 
-const getUsers = async (req, res) => {
-    try {
-        const users = await getUsersService();
-        res.sendSuccess(users);
-    } catch (error) {
-        res.sendServerError(error.message);
-    }
-}
-
-const getUserById = async (req, res) => {
-    try {
-        const { uid } = req.query;
-        const user = await getUserByIdService(uid);
-        res.sendSuccess(user);
-    } catch (error) {
-        res.sendServerError(error.message);
-    }
-}
-
-const getUserByEmail = async (req, res) => {
-    try {
-        const email = req.body;
-        const user = await getUserByEmailService(email);
-        res.sendSuccess(user);
-    } catch (error) {
-        res.sendServerError(error.message);
-    }
-}
 
 const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await getUserByEmailService(email);
-    if (!user) {
-        logger.error("No se encontro al usuario")
-        throw CustomError.createError({
-            name: "UserError",
-            cause: generateUserErrorNotExist({
-                email
-            }),
-            message: "Error trying to login",
-            code: EErrors.USER_NOT_FOUND
-        })
-    }
-
-    const accessToken = await login(password, user);
-
-    logger.info("Usuario correcto")
-    return res.cookie(
-        'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
-    ).send({ 
-        status: "success",
-        payload: accessToken 
-    });
-}
-const passwordLink = async (req, res) => {
     try {
-        const { email } = req.body;
-        const user = await getUserByEmailService(email);
-        if (!user) {
-            logger.error("No se encontro al usuario")
-            throw CustomError.createError({
-                name: "UserError",
-                cause: generateUserErrorNotExist({
-                    email
-                }),
-                message: "Error trying to login",
-                code: EErrors.USER_NOT_FOUND
-            })
-        }
-        const accessToken = await passwordLinkService(user);
-        res.sendSuccess({ accessToken });
+        const { email, password } = req.body;
+        const user = await getUserByEmailLoginService(email);
+        const accessToken = await loginService(password, user);
+        logger.info("Login Success")
+        return res.cookie(
+            'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
+        ).send({ 
+            status: "success",
+            payload: accessToken 
+        });
     } catch (error) {
-        res.sendServerError(error.message);
+        if (error instanceof UserNotFound) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof IncorrectLoginCredentials) {
+            return res.sendClientError(error.message);
+        }
+        res.sendServerError(error);
     }
-    
 }
 
 const registerUser = async (req, res) => {
-    const { name, last_name, phone, age, email, password } = req.body;
+    try {
+        const { name, last_name, phone, age, email, password } = req.body;
+        if (!name || !last_name || !phone || !age || !email || !password) {
+            return res.sendClientError('Incomplete values')
+        }
+        await getUserByEmailRegisterService(email);
+        const result = await registerService({ ...req.body });
+        logger.info("Register Success")
+        res.sendSuccess(result)
+    } catch (error) {
+        if (error instanceof UserAlreadyExists) {
+            return res.sendClientError('User already exists')
+        }
+        res.sendServerError(error.message);
+    }
     const user = new UsersDTO({ name, last_name, phone, age, email, password })
-
-    if (!name || !last_name || !age || !email || !password) {
-        logger.error("No se recibieron todos los datos necesarios")
-        throw CustomError.createError({
-            name: "UserError",
-            cause: generateUserErrorInfo({
-                name,
-                last_name,
-                age,
-                email,
-                password
-            }),
-            message: "Error trying to create user",
-            code: EErrors.INVALID_TYPE_ERROR
-        })
-    }
-    const exists = await getUserByEmailService(email);
-    if (exists) {
-        logger.warning("El email ingresado ya se encuentra registrado")
-        throw CustomError.createError({
-            name: "UserError",
-            cause: generateUserErrorExist({
-                email
-            }),
-            message: "Error trying to create user",
-            code: EErrors.INVALID_TYPE_ERROR
-        })
-    }
-    const hashedPassword = createHash(password);
-    const newCart = await saveCartService({ products: [] });
-    console.log(newCart);
-    const newUser = {
-        ...req.body, role: "USER", cart: newCart._id
-    }
-    console.log(newUser);
-    newUser.password = hashedPassword
-    const result = await saveUserService(newUser);
-    logger.info("El usuario se registro correctamente")
-    res.send({
-        status: "success",
-        payload: result
-    });
 }
+
+const passwordLink = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await getUserByEmailLoginService(email);
+        const accessToken = await passwordLinkService(user);
+        res.sendSuccess({ accessToken });
+    } catch (error) {
+        if (error instanceof UserNotFound) {
+            return res.sendClientError(error.message);
+        }
+        res.sendServerError(error.message);
+    }
+}
+
 const passwordReset = async (req, res) => {
     try {
         const { password, token } = req.body;
@@ -150,9 +80,42 @@ const passwordReset = async (req, res) => {
             res.sendSuccess(result);
         }
     } catch (error) {
+        if (error instanceof IncorrectToken) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof UseNewPassword) {
+            return res.sendClientError(error.message);
+        }
         res.sendServerError(error.message);
     }
 }
+
+const userToPremium = async (req, res) => {
+    try {
+        const uid = req.params.uid;
+        const user = await getUserByIdService(uid);
+        const result = await userToPremiumService(user)
+        res.sendSuccess(result)
+    } catch (error) {
+        if (error instanceof UserNotFound) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof CantSwitchRoles) {
+            return res.sendClientError(error.message);
+        }
+        res.sendServerError(error.message);
+    }
+}
+
+const userLogout = (req, res) => {
+    try {
+        logger.info('access token deleted successfully');
+        res.clearCookie("coderCookieToken").redirect('/login')
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
 const userCurrent = async (req, res) => {
     try {
         const result = new UsersDTO(req.user)
@@ -162,87 +125,53 @@ const userCurrent = async (req, res) => {
     }
 }
 
-const updateUser = async (req, res) => {
-    try {
-        const { uid } = req.query;
-        const user = req.body;
-        const result = await updateUserService(uid, user);
-        res.sendSuccess(result);
-    } catch (error) {
-        res.sendServerError(error.message);
-    }
-}
-
-
-
-const deleteUser = async (req, res) => {
-    try {
-        const { uid } = req.query;
-        const result = await deleteUserService(uid);
-        res.sendSuccess(result);
-    } catch (error) {
-        res.sendServerError(error.message);
-    }
-}
-
 const loginGithub = async (req, res) => {
-    res.sendSuccess("User registered")
+    try {
+        res.sendSuccess("User registered")
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
 }
 
 const callBackGithub = async (req, res) => {
-    const accessToken = generateToken(req.user);
+    try {
+        const accessToken = generateToken(req.user);
     res.cookie(
         'coderCookieToken', accessToken, { maxAge: 60 * 60 * 1000, httpOnly: true }
     )
     res.redirect('/')
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
 }
 
 const getPasswordLink = async (req, res) => {
-    res.render("password-link")
-}
-const getPasswordReset = async (req, res) => {
-    const { token = "" } = req.query
-    res.render("password-reset", { token })
+    try {
+        res.render("password-link")
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
 }
 
-const userToPremium = async (req, res) => {
+const getPasswordReset = async (req, res) => {
     try {
-        const uid = req.params.uid;
-        const user = await getUserByIdService(uid);
-        if (user.role === "ADMIN") {
-            res.sendClientError('not change role, admin user');
-        } 
-        if (user.role === "USER") {
-            user.role = "PREMIUM"
-            const result = await updateUserService(user._id, user);
-            req.logger.info('Role change successfully');
-            res.sendSuccess(result);
-        } else {
-            user.role = "USER"
-            const result = await updateUserService(user._id, user);
-            req.logger.info('Role change successfully');
-            res.sendSuccess(result);
-        }
-        
+        const { token = "" } = req.query
+    res.render("password-reset", { token })
     } catch (error) {
         res.sendServerError(error.message);
     }
 }
 
 export {
-    getUsers,
-    getUserById,
-    getUserByEmail,
-    registerUser,
-    updateUser,
-    deleteUser,
     loginUser,
+    registerUser,
+    passwordLink,
+    passwordReset,
+    userToPremium,
+    userLogout,
+    userCurrent,
     loginGithub,
     callBackGithub,
-    userCurrent,
     getPasswordLink,
-    passwordLink,
-    getPasswordReset,
-    passwordReset,
-    userToPremium
+    getPasswordReset
 }

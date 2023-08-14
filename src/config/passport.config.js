@@ -5,7 +5,7 @@ import { PRIVATE_KEY } from "./contants.js";
 import config from "./config.js";
 import { getUserByEmailService } from "../services/users.services.js";
 import { saveCartService } from "../services/carts.services.js";
-import { createHash } from "../utils.js";
+import { createHash } from "../utils/utils.js";
 
 const JWTStrategy = jwt.Strategy;
 const ExtractJWT = jwt.ExtractJwt;

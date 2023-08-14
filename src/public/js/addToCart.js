@@ -1,17 +1,12 @@
 const postButtons = document.getElementById(`addBtn`);
 const user = document.getElementById('userInfo')
 const cid = user.dataset.cid;
-console.log(cid);
-
 
 postButtons.addEventListener(`click`, () => {
     // Obtener el valor de pid
     const pid = postButtons.dataset.pid; // Reemplaza 'pid' por la forma en que obtienes el valor de pid dinámicamente
-    console.log(pid);
     // Realizar la solicitud POST aquí
-    const url = `http://localhost:8081/api/carts/${cid}/product/${pid}`;
-    console.log(url);
-    fetch(url, {
+    fetch(`http://localhost:8081/api/carts/${cid}/product/${pid}`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"

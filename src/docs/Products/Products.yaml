@@ -1,0 +1,184 @@
+paths:
+  /api/products:
+    get:
+      summary: Obtiene todos los productos
+      tags:
+        - Products
+      responses:
+        "200":
+          description: Los productos fueron obtenidos satisfactoriamente de la BDD
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o fallo en la conexion a la BBD
+    post:
+      summary: Ingresa un nuevo producto
+      tags:
+        - Products
+      responses:
+        "200":
+          description: El producto se ingreso satisfactoriamente a la BDD
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/requestBodies/updateProduct'
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o fallo en la conexion a la BBD
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un solo producto a partir de su pid
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          desciption: El ID del producto
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: El producto fue obtenido satisfactoriamente de la BDD
+          content:
+            applicantion/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o fallo en la conexion a la BBD
+    put:
+      summary: Actualiza el producto a partir de su pid
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          desciption: El ID del producto
+          schema:
+            $type: String
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        "200":
+          description: El producto fue actualizado correctamente
+        "404":
+          description: El producto no fue encontrado en la BDD
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o fallo en la conexion a la BBD
+    delete:
+      summary: Se elimina un producto a partir de su pid
+      tags:
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: El ID del producto
+          schema:
+            $type: String
+      responses:
+        "200":
+          description: El producto fue actualizado correctamente
+        "404":
+          description: El producto no fue encontrado en la BDD
+        "500":
+          description: Error interno del servidor, usualmente generado por una query defectuosa o fallo en la conexion a la BBD    
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: ID autogenerado de mongodb
+        title:
+          type: String
+          description: Titulo del producto
+        description:
+          type: String
+          description: Breve descripcion del producto
+        code:
+          type: String
+          description: Codigo unico que tendra cada producto
+        price:
+          type: Number
+          description: Precio que tendra el producto
+        status:
+          type: Boolean
+          description: Estado que tendra el producto
+        stock:
+          type: Number
+          description: Numero que determinara la cantidad de stock que tendra el producto
+        category:
+          type: String
+          description: Categorias en la cual se encontraran los productos para su correcto ordenamiento
+        thumbnail:
+          type: String
+          description: Imagen que mostrara al producto
+        owner:
+          type: String
+          description: Espacio para ingresar al usuario que creo el producto
+      example:
+        _id: ObjectId('dasdasdas545sd4a14')
+        title: "Coca Cola"
+        description: "Bebida azucarada"
+        code: "cocacola1234"
+        price: 500
+        status: true
+        stock: 10000
+        category: "bebidas"
+        thumbnail: ""
+        owner: "javi4195@gmail.com"
+  requestBodies:
+    updateProduct:
+      type: object
+      properties:
+        title:
+          type: String
+          description: Titulo del producto
+        description:
+          type: String
+          description: Breve descripcion del producto
+        code:
+          type: String
+          description: Codigo unico que tendra cada producto
+        price:
+          type: Number
+          description: Precio que tendra el producto
+        status:
+          type: Boolean
+          description: Estado que tendra el producto
+        stock:
+          type: Number
+          description: Numero que determinara la cantidad de stock que tendra el producto
+        category:
+          type: String
+          description: Categorias en la cual se encontraran los productos para su correcto ordenamiento
+        thumbnail:
+          type: String
+          description: Imagen que mostrara al producto
+        owner:
+          type: String
+          description: Espacio para ingresar al usuario que creo el producto
+      example:
+        title: "Coca Cola"
+        description: "Bebida azucarada"
+        code: "cocacola1234"
+        price: 500
+        status: true
+        stock: 10000
+        category: "bebidas"
+        thumbnail: ""
+        owner: "javi4195@gmail.com"
