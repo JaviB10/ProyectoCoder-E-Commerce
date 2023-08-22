@@ -74,7 +74,7 @@ const saveProduct = async (req, res) => {
         if (!product.title || !product.description || !product.code || !product.price || !product.stock || !product.category || !product.thumbnail){
             return res.sendClientError('Incomplete values')
         }
-        const result = await saveProductService(product);
+        const result = await saveProductService(product, req.user);
         res.sendSuccess(result)
     } catch (error) {
         res.sendServerError(error.message);

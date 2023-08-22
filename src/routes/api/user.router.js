@@ -10,7 +10,7 @@ export default class UsersRouter extends Router {
         this.get('/github', ['PUBLIC'], passportStrategiesEnum.GITHUB, loginGithub)
         this.get('/github-callback', ['PUBLIC'], passportStrategiesEnum.GITHUB, callBackGithub)
         this.get('/logout', ['USER', 'ADMIN', 'PREMIUM'], passportStrategiesEnum.JWT, userLogout);
-        this.get('/current', ['ADMIN','USER'], passportStrategiesEnum.JWT, userCurrent);
+        this.get('/current', ['ADMIN','USER', 'PREMIUM'], passportStrategiesEnum.JWT, userCurrent);
         this.post('/password-link', ['PUBLIC'], passportStrategiesEnum.NOTHING, passwordLink);
         this.post('/password-reset', ['PUBLIC'], passportStrategiesEnum.NOTHING, passwordReset);
         this.get('/premium/:uid', ['ADMIN'], passportStrategiesEnum.JWT, userToPremium);

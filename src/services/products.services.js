@@ -26,14 +26,14 @@ const getProductByIdOneService = async (pid) => {
     return product;
 }
 
-const saveProductService = async (product) => {
+const saveProductService = async (product, user) => {
     if (product.status === null || product.status === undefined) {
         product.status = true;
     }
     if (!product.owner || product.owner.trim() === "") {
         product.owner = "ADMIN";
     } else if (product.owner && product.owner.trim() !== "") {
-        product.owner = req.user.email;
+        product.owner = user.email;
     }
     const result = await productsRepository.saveProductRepository(product);
     return result;

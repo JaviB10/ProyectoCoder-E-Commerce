@@ -3,6 +3,7 @@ import UsersRepository from "../repositories/users.repository.js";
 import { createHash, generateToken, isValidPassword, validateToken } from "../utils/utils.js";
 import { sendEmail } from "./email.service.js";
 import { CantSwitchRoles, IncorrectLoginCredentials, IncorrectToken, UseNewPassword, UserAlreadyExists, UserNotFound } from "../utils/custom-exceptions.js";
+import { saveCartService } from "./carts.services.js";
 
 const usersRepository = new UsersRepository();
 
