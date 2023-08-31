@@ -1,0 +1,26 @@
+<h1>Subir Archivos</h1>
+<form id="form3" action="/api/users/{{ uid }}/documents" method="POST" enctype="multipart/form-data">
+        <label for="profiles">Imagen de Perfil:</label>
+        <input type="file" class="documentBtn" name="profiles">
+        <br>
+        <label for="products">Imagen de Producto:</label>
+        <input type="file" class="documentBtn" name="products">
+        <br>
+        <label for="identificacion">Identificación:</label>
+        <input type="file" class="documentBtn" name="identificacion" accept=".pdf, .jpg, .png">
+        <br>
+
+        <label for="domicilio">Comprobante de domicilio:</label>
+        <input type="file" class="documentBtn" name="domicilio" accept=".pdf, .jpg, .png">
+        <br>
+
+        <label for="estadoCuenta">Comprobante de estado de cuenta:</label>
+        <input type="file" class="documentBtn" name="estadoCuenta" accept=".pdf, .jpg, .png">
+        <br>
+
+        <button type="submit">Subir Archivos</button>
+</form>
+
+<div id="userInfo" data-uid="{{ uid }}"></div>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/uploader.js"></script> 

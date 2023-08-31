@@ -42,6 +42,8 @@ const loginService = async (password, user) => {
         throw new IncorrectLoginCredentials('Incorrect credentials')
     }
     const accessToken = generateToken(user);
+    const lastConnection =  new Date();
+    await usersRepository.updateUserRepository(user._id, { 'last_connection': lastConnection });
     return accessToken;
 }
 
@@ -89,14 +91,27 @@ const passwordResetService = async (user, password) => {
 
 const userToPremiumService = async (user) => {
     const newUser = user
+    
     if (user.role === "ADMIN") {
         throw new CantSwitchRoles('The user has a role as ADMIN')
     } 
+    const requiredDocuments = ["identificacion", "domicilio", "estadoCuenta"];
+    const userDocuments = user.documents.map(document => document.name);
+
+    const areRequiredDocumentsUploaded = requiredDocuments.every(document => userDocuments.includes(document));
+
+    if (!areRequiredDocumentsUploaded) {
+        throw new Error('The user has not uploaded all required documents');
+    }
     newUser.role = user.role === "USER" ? "PREMIUM" : "USER"
     const result = await usersRepository.updateUserRepository(user._id, newUser);
     res.sendSuccess(result);
 }
 
+const updateUserService = async (cid, product) => {
+    const result = await usersRepository.updateUserRepository(cid, product);
+    return result;
+}
 export {
     getUserByIdService,
     getUserByEmailService,
@@ -107,5 +122,6 @@ export {
     verificarTokenService,
     passwordResetService,
     registerService,
-    userToPremiumService
+    userToPremiumService,
+    updateUserService
 }

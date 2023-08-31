@@ -2,7 +2,7 @@ import Router from "../router.js"
 import { passportStrategiesEnum } from "../../config/enums.js";
 import { getProductById, getProductsPaginate, getNewProduct } from "../../controllers/product.controllers.js";
 import { getCartById } from "../../controllers/carts.controllers.js";
-import { getPasswordLink, getPasswordReset } from "../../controllers/users.controllers.js";
+import { getPasswordLink, getPasswordReset, getViewProfile } from "../../controllers/users.controllers.js";
 
 export default class ViewsRouter extends Router {
     init() {
@@ -23,5 +23,6 @@ export default class ViewsRouter extends Router {
         this.get('/password-link', ['PUBLIC'], passportStrategiesEnum.NOTHING, getPasswordLink);
         this.get('/password-reset', ['PUBLIC'], passportStrategiesEnum.NOTHING, getPasswordReset);
         this.get('/new-product', ['ADMIN', 'PREMIUM'], passportStrategiesEnum.JWT, getNewProduct);
+        this.get('/viewProfile', ['ADMIN', 'USER', 'PREMIUM'], passportStrategiesEnum.JWT, getViewProfile)
     }
 }

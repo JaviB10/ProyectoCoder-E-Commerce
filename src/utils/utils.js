@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { PRIVATE_KEY } from '../config/contants.js';
 import { faker } from "@faker-js/faker"
 import nodemailer from "nodemailer"
+import multer from 'multer'
 
 faker.locale = "es";
 
@@ -55,3 +56,38 @@ const __mainDirname = path.join(__dirname, "..")
 
 export default __mainDirname;
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        console.log(file.fieldname);
+        switch (file.fieldname) {
+            case "profiles":
+                console.log("entra aca");
+                cb(null, `${__mainDirname}/public/files/profiles`);
+                break;
+            case "products":
+                cb(null, `${__mainDirname}/public/files/products`);
+                break;
+            case "identificacion":
+                cb(null, `${__mainDirname}/public/files/documents`);
+                break;    
+            case "domicilio":
+                cb(null, `${__mainDirname}/public/files/documents`);
+                break;   
+            case "estadoCuenta":
+                cb(null, `${__mainDirname}/public/files/documents`);
+                break;    
+            default:
+                break;
+        }  
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+    }
+});
+
+export const uploader = multer({
+    storage, onError: (err, next) => {
+        console.log(err)
+        next()
+    }
+}) 

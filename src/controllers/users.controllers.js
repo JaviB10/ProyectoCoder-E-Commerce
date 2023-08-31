@@ -7,6 +7,7 @@ import {
     passwordLinkService,
     passwordResetService,
     registerService,
+    updateUserService,
     userToPremiumService,
     verificarTokenService
 } from "../services/users.services.js"
@@ -153,10 +154,64 @@ const getPasswordLink = async (req, res) => {
     }
 }
 
+const getViewProfile = async (req, res) => {
+    try {
+        const uid = req.user._id
+        console.log(uid);
+        res.render("viewProfile", {uid})
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
 const getPasswordReset = async (req, res) => {
     try {
         const { token = "" } = req.query
     res.render("password-reset", { token })
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
+const uploaderDocuments = async (req, res) => {
+    try {
+        const newDocument = []
+        const archivos = req.files
+        const user = req.user
+
+        for (const fieldName in archivos) {
+            if (fieldName) {
+                const filesArray = archivos[fieldName];
+                filesArray.forEach(file => {
+                    
+                    const fieldname = file.fieldname;
+                    const filename = file.filename;
+                
+                    let name;
+                    if (fieldname === "profiles") {
+                        name = "profiles";
+                    } else if (fieldname === "products") {
+                        name = "products";
+                    } else if (fieldname === "identificacion") {
+                        name = "identificacion";
+                    } else if (fieldname === "domicilio") {
+                        name = "domicilio";
+                    } else if (fieldname === "estadoCuenta") {
+                        name = "estadoCuenta";
+                    }
+                    
+                    let document = {
+                        name: name,
+                        reference: `http://localhost:8081/files/${name}/${filename}`
+                    };
+                    newDocument.push(document);
+                });
+            }
+        }
+        const result = await updateUserService(user._id, {
+            $addToSet: { documents: { $each: newDocument } }
+        });
+        res.sendSuccess(result)
     } catch (error) {
         res.sendServerError(error.message);
     }
@@ -173,5 +228,7 @@ export {
     loginGithub,
     callBackGithub,
     getPasswordLink,
-    getPasswordReset
+    getPasswordReset,
+    uploaderDocuments,
+    getViewProfile
 }
