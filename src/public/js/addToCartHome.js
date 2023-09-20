@@ -12,7 +12,7 @@ for (let i = 0; i < postButtons.length; i++) {
         const data = {
             uid: uid
         };
-        fetch(`http://localhost:8081/api/carts/${cid}/product/${pid}`, {
+        fetch(`/api/carts/${cid}/product/${pid}`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

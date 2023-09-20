@@ -60,7 +60,6 @@ export class DocumentsComplete extends Error {
     }
 }
 
-
 //Product's exceptions
 export class ProductNotFound extends Error {
     constructor(message) {

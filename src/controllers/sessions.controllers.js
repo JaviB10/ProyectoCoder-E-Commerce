@@ -138,6 +138,35 @@ const getPasswordReset = async (req, res) => {
     }
 }
 
+
+const getLogin = async (req, res) => {
+    try {
+        if (req.cookies["coderCookieToken"]) res.redirect("/products");
+        res.render("login");
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
+
+const getRegister = async (req, res) => {
+    try {
+        if (req.cookies["coderCookieToken"]) res.redirect("/products");
+        res.render("register");
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
+
+const getLogueado = async (req, res) => {
+    try {
+        res.redirect("/login");
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
 export {
     login,
     register,
@@ -148,5 +177,8 @@ export {
     passwordLink,
     passwordReset,
     getPasswordLink,
-    getPasswordReset
+    getPasswordReset,
+    getLogin,
+    getRegister,
+    getLogueado
 }
