@@ -1,7 +1,7 @@
 import ProductsRepository from "../repositories/products.repository.js";
 import { CantDeleteProduct, IncompleteValues, ProductNotFound } from "../utils/custom-exceptions.js";
 import { deleteProductNotification } from "../utils/custom-html.js";
-import { sendEmail } from "./email.service.js";
+import { sendEmail } from "./email.services.js";
 
 const productsRepository = new ProductsRepository();
 

@@ -2,10 +2,13 @@ import CartsRepository from "../repositories/carts.repository.js";
 import ProductsRepository from "../repositories/products.repository.js";
 import TicketsRepository from "../repositories/tickets.repository.js";
 import { CantAddProduct, CantDeleteAllProduct, CantPurchase, CartNotFound, OutStockProduct } from "../utils/custom-exceptions.js";
+import PaymentsService from "./payments.services.js";
 
 const cartsRepository = new CartsRepository();
 const productsRepository = new ProductsRepository();
 const ticketsRepository = new TicketsRepository();
+
+const paymentService = new PaymentsService()
 
 const getCartByIdService = async (cid) => {
     const cart = await cartsRepository.getCartByIdRepository(cid);
@@ -120,11 +123,12 @@ const purchaseCartService = async (user, cart) => {
     const produ = {products: productsSinStock};
     await cartsRepository.updateCartRepository(cart._id, produ);
 
-    
+    console.log(ticket);
     if (productsConStock.length === 0) {
         throw new OutStockProduct('the product is out of stock at the moment')
     } else {
-        const result = await ticketsRepository.saveTicketRepository(ticket);
+        await ticketsRepository.saveTicketRepository(ticket);
+        const result = await paymentService.paymentsProductsService(ticket)
         return ({ticket: result , productOut: productsSinStock});
     }
     

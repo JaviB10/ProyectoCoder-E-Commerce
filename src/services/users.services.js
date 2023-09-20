@@ -1,6 +1,6 @@
 import { deleteUserNotification } from "../utils/custom-html.js";
 import UsersRepository from "../repositories/users.repository.js";
-import { sendEmail } from "./email.service.js";
+import { sendEmail } from "./email.services.js";
 import { CantDeleteUser, CantSwitchRoles, DocumentsComplete, MissingDocuments, UserAlreadyExists, UserNotFound } from "../utils/custom-exceptions.js";
 import CartsRepository from "../repositories/carts.repository.js";
 

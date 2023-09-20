@@ -4,7 +4,7 @@ import { IncompleteValues, IncorrectLoginCredentials, IncorrectToken, UseNewPass
 import { resetPassword } from "../utils/custom-html.js";
 import { createHash, generateToken, isValidPassword, validateToken } from "../utils/utils.js";
 import { saveCartService } from "./carts.services.js";
-import { sendEmail } from "./email.service.js";
+import { sendEmail } from "./email.services.js";
 
 const usersRepository = new UsersRepository();
 
