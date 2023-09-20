@@ -1,11 +1,11 @@
-const form = document.getElementById('loginForm');
+const form = document.getElementById("formLogin");
 
 form.addEventListener('submit', e => {
     e.preventDefault();
     const data = new FormData(form);
     const obj = {};
     data.forEach((value, key) => obj[key] = value);
-    fetch('/api/users/login', {
+    fetch('/api/sessions/login', {
         method: 'POST',
         body: JSON.stringify(obj),
         headers: {
@@ -21,9 +21,12 @@ form.addEventListener('submit', e => {
                 showConfirmButton: false,
                 timer: 3000,
                 title: "¡Error!",
-                text: "Los campos ingresados son incorrectos.",
+                text: "The values are incorrect.",
                 icon: "error"
             });
         }
     })
+    .catch(error => {
+        console.error("Error during the POST request:", error);
+    });
 })

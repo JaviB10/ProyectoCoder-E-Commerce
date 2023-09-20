@@ -41,6 +41,25 @@ export class CantSwitchRoles extends Error {
         this.name = this.constructor.name;
     }
 }
+export class MissingDocuments extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+export class CantDeleteUser extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+export class DocumentsComplete extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+
 
 //Product's exceptions
 export class ProductNotFound extends Error {
@@ -50,6 +69,18 @@ export class ProductNotFound extends Error {
     }
 }
 export class CantDeleteProduct extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+export class IncompleteValues extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+export class OutStockProduct extends Error {
     constructor(message) {
         super(message);
         this.name = this.constructor.name;
@@ -69,5 +100,16 @@ export class CantAddProduct extends Error {
         this.name = this.constructor.name;
     }
 }
-
+export class CantDeleteAllProduct extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
+export class CantPurchase extends Error {
+    constructor(message) {
+        super(message);
+        this.name = this.constructor.name;
+    }
+}
 

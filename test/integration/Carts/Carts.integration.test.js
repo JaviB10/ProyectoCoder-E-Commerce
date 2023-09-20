@@ -16,7 +16,7 @@ describe('Testing de carts', () => {
             password: 'topgun22'
         };
 
-        const loginResult = await requester.post('/api/users/login').send(credentialsMock);
+        const loginResult = await requester.post('/api/sessions/login').send(credentialsMock);
         const cookieResult = loginResult.headers['set-cookie'][0];
         const cookieResultSplit = cookieResult.split('=');
 
@@ -25,7 +25,7 @@ describe('Testing de carts', () => {
             value: cookieResultSplit[1]
         };
 
-        const { _body } = await requester.get('/api/users/current')
+        const { _body } = await requester.get('/api/sessions/current')
             .set('Cookie', [`${cookie.name}=${cookie.value}`]);
 
         expect(_body.data.email).to.be.eql('conrado@hotmail.com');

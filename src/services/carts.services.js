@@ -1,7 +1,7 @@
 import CartsRepository from "../repositories/carts.repository.js";
 import ProductsRepository from "../repositories/products.repository.js";
 import TicketsRepository from "../repositories/tickets.repository.js";
-import { CantAddProduct, CartNotFound } from "../utils/custom-exceptions.js";
+import { CantAddProduct, CantDeleteAllProduct, CantPurchase, CartNotFound, OutStockProduct } from "../utils/custom-exceptions.js";
 
 const cartsRepository = new CartsRepository();
 const productsRepository = new ProductsRepository();
@@ -9,6 +9,18 @@ const ticketsRepository = new TicketsRepository();
 
 const getCartByIdService = async (cid) => {
     const cart = await cartsRepository.getCartByIdRepository(cid);
+
+    // Filtrar los productos con item.product igual a null
+    const productsToRemove = cart.products.filter((item) => item.product === null);
+    // Verificar si hay productos para eliminar
+    if (productsToRemove.length > 0) {
+        // Remover los productos con item.product igual a null
+        cart.products = cart.products.filter((item) => item.product !== null);
+
+        // Actualizar el carrito en la base de datos
+        await cartsRepository.updateCartRepository(cart._id, cart);
+    }
+    
     if (!cart) {
         throw new CartNotFound('Cart not found')
     }
@@ -20,11 +32,17 @@ const saveCartService = async (cart) => {
     return result;
 }
 
-const addProductToCartService = async (cid, pid, productFound, user) => {
+const addProductToCartService = async (cartFound, productFound, pid, user) => {
     if (productFound.owner === user.email && user.role === "PREMIUM") {
         throw new CantAddProduct('The user cant be add product')
     }
-    const result = await cartsRepository.addProductToCartRepository(cid, pid);
+    const productIndex = cartFound.products.findIndex((item) => item.product._id.toString() === pid);
+    if (productIndex !== -1) {
+        cartFound.products[productIndex].quantity += 1;
+    } else {
+        cartFound.products.push({product: pid});
+    }
+    const result = await cartsRepository.updateCartRepository(cartFound._id, cartFound);
     return result;
 }
 
@@ -33,22 +51,42 @@ const updateCartService = async (cid, product) => {
     return result;
 }
 
-const updateQuantityService = async (cid, pid, cantidad) => {
-    const result = await cartsRepository.updateQuantityRepository(cid, pid, cantidad);
+const updateQuantityService = async (cartFound, pid, quantity) => {
+    const productIndex = cartFound.products.findIndex((item) => item.product.toString() === pid);
+    if (productIndex !== -1) {
+        cartFound.products[productIndex].quantity = quantity.quantity;
+    } else {
+        return false
+    }
+    const result = await cartsRepository.updateCartRepository(cartFound._id, cartFound);
     return result;
 }
 
-const deleteProductService = async (cid, pid) => {
-    const result = await cartsRepository.deleteProductRepository(cid, pid);
+const deleteProductService = async (cartFound, pid) => {
+    const productIndex = cartFound.products.findIndex((item) => item.product._id.toString() === pid);
+    if (productIndex !== -1) {
+        cartFound.products.splice(productIndex, 1);
+    } else {
+        return
+    }
+    const result = await cartsRepository.updateCartRepository(cartFound._id, cartFound);
     return result;
 }
 
-const deleteAllProductService = async (cid) => {
-    const result = await cartsRepository.deleteAllProductRepository(cid);
+const deleteAllProductService = async (cartFound) => {
+    if (cartFound.products.length === 0) {
+        throw new CantDeleteAllProduct('The cart has no products')
+    } else {
+        cartFound.products = [];
+    }
+    const result = await cartsRepository.updateCartRepository(cartFound._id, cartFound);
     return result;
 }
 
 const purchaseCartService = async (user, cart) => {
+    if (cart.products.length === 0) {
+        throw new CantPurchase('The cart has no products')
+    }
     const productsCart = cart.products;
     const productsConStock = [];
     const productsSinStock = [];
@@ -57,7 +95,6 @@ const purchaseCartService = async (user, cart) => {
 
         if (item.quantity <= item.product.stock) {
             productsConStock.push(item);
-            console.log(productsConStock);
             const product = item.product
             product.stock -= item.quantity
             await productsRepository.updateProductRepository(product._id, product);
@@ -68,7 +105,6 @@ const purchaseCartService = async (user, cart) => {
 
     const sum = productsConStock.reduce((acc, producto) => {
         acc += producto.product.price;
-        console.log(acc);
         return acc;
     }, 0);
 
@@ -86,7 +122,7 @@ const purchaseCartService = async (user, cart) => {
 
     
     if (productsConStock.length === 0) {
-        throw { message: "No hay stock" };
+        throw new OutStockProduct('the product is out of stock at the moment')
     } else {
         const result = await ticketsRepository.saveTicketRepository(ticket);
         return ({ticket: result , productOut: productsSinStock});

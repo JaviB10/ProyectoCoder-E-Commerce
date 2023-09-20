@@ -17,7 +17,7 @@ describe('Testing users', () => {
             password: 'topgun22'
         }
         
-        const { statusCode, _body } = await requester.post('/api/users/register').send(userMock);
+        const { statusCode, _body } = await requester.post('/api/sessions/register').send(userMock);
         expect(statusCode).to.be.eql(200);
         expect(_body).to.be.ok;
     })
@@ -28,7 +28,7 @@ describe('Testing users', () => {
             password: 'topgun22'
         };
 
-        const loginResult = await requester.post('/api/users/login').send(credentialsMock);
+        const loginResult = await requester.post('/api/sessions/login').send(credentialsMock);
         const cookieResult = loginResult.headers['set-cookie'][0];
         expect(cookieResult).to.be.ok;
 
@@ -45,7 +45,7 @@ describe('Testing users', () => {
 
     it('Debemos enviar una cookie en el servicio current y entregar la información al usuario', async () => {
         // Hacer la solicitud GET al servicio /api/users/current con la cookie
-        const { _body } = await requester.get('/api/users/current')
+        const { _body } = await requester.get('/api/sessions/current')
             .set('Cookie', [`${cookie.name}=${cookie.value}`]);
 
         // Verificar que la información del usuario en la respuesta sea correcta

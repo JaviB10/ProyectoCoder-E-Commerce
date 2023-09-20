@@ -1,0 +1,22 @@
+<div>
+
+    <h1>ALL USERS</h1>
+
+    {{#each this.user}}
+        
+        <ul>
+            <li>Name: {{this.name}}</li> 
+            <li>Email: {{this.email}}</li>
+            <li>Role: {{this.role}}</li>
+            <li>Last Connection: {{this.last_connection}}</li> 
+            <button data-uid="{{this.id}}" class="changeRoleBtn">Change role</button>
+            <button data-uid="{{this.id}}" class="deleteUserBtn">Delete user</button>
+        </ul>
+        
+    {{/each}}
+    <button id="deleteAllBtn">Delete All Users</button>
+    
+</div>
+
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/viewUsers.js"></script>

@@ -8,7 +8,7 @@ import {
     purchaseCartService
 } from "../services/carts.services.js"
 import { getProductByIdOneService, getProductByIdService } from "../services/products.services.js";
-import { CantAddProduct, CartNotFound, ProductNotFound } from "../utils/custom-exceptions.js";
+import { CantAddProduct, CantDeleteAllProduct, CantPurchase, CartNotFound, OutStockProduct, ProductNotFound } from "../utils/custom-exceptions.js";
 
 const getCartById = async (req, res) => {
     try {
@@ -26,9 +26,9 @@ const getCartById = async (req, res) => {
 const addProductToCart = async (req, res) => {
     try {
         const { cid, pid } = req.params;
-        await getCartByIdService(cid)
+        const cartFound = await getCartByIdService(cid)
         const productFound = await getProductByIdOneService(pid);
-        const result = await addProductToCartService(cid, pid, productFound, req.user);
+        const result = await addProductToCartService(cartFound, productFound, pid, req.user);
         res.sendSuccess(result);
     } catch (error) {
         if (error instanceof CartNotFound) {
@@ -62,10 +62,10 @@ const updateCart = async (req, res) => {
 const updateQuantity = async (req, res) => {
     try {
         const { cid, pid } = req.params;
-        const cantidad = req.body;
+        const quantity = req.body;
+        const cartFound = await getCartByIdService(cid)
         await getProductByIdService(pid);
-        await getCartByIdService(cid)
-        const result = await updateQuantityService(cid, pid, cantidad);
+        const result = await updateQuantityService(cartFound, pid, quantity);
         res.sendSuccess(result);
     } catch (error) {
         if (error instanceof CartNotFound) {
@@ -82,8 +82,8 @@ const deleteProduct = async (req, res) => {
     try {
         const { cid, pid } = req.params;
         await getProductByIdService(pid);
-        await getCartByIdService(cid)
-        const result = await deleteProductService(cid, pid);
+        const cartFound = await getCartByIdService(cid)
+        const result = await deleteProductService(cartFound, pid);
         res.sendSuccess(result);
     } catch (error) {
         if (error instanceof CartNotFound) {
@@ -99,11 +99,14 @@ const deleteProduct = async (req, res) => {
 const deleteAllProduct = async (req, res) => {
     try {
         const cid = req.params.cid; 
-        await getCartByIdService(cid)
-        const result = await deleteAllProductService(cid);
+        const cartFound = await getCartByIdService(cid)
+        const result = await deleteAllProductService(cartFound);
         res.sendSuccess(result)
     } catch (error) {
         if (error instanceof CartNotFound) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof CantDeleteAllProduct) {
             return res.sendClientError(error.message);
         }
         res.sendServerError(error.message);
@@ -114,13 +117,16 @@ const purchaseCart = async (req,res) => {
     try {
         const cartID = req.params.cid;
         const cart = await getCartByIdService(cartID)
-        if (cart.product === []) {
-            return res.sendClientError("Empty cart")
-        }
         const result = await purchaseCartService(req.user, cart);
         res.sendSuccess(result);   
     } catch (error) {
         if (error instanceof CartNotFound) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof CantPurchase) {
+            return res.sendClientError(error.message);
+        }
+        if (error instanceof OutStockProduct) {
             return res.sendClientError(error.message);
         }
         res.sendServerError(error.message);

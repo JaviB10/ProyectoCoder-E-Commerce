@@ -1,4 +1,3 @@
-import UsersDTO from "../dao/DTOs/users.dto.js";
 import { USERSDAO } from "../dao/factory.js";
 
 export default class UsersRepository {

@@ -17,13 +17,14 @@
             <li>Thumbnail: {{this.product.thumbnail}}</li>
             <li>ID: {{this.product._id}}</li>
             <li>Quantity: {{this.quantity}}</li>
-            <button data-pid="{{this.product._id}}" class="deleteProductBtn">Delete product</button>
+            <button data-pid="{{this.product._id}}" class="btnDeleteProduct">Delete product</button>
         </ul>
         
     {{/each}}
-    <button id="deleteAllBtn">Delete product</button>
-    <button id="finallyOrder">Finally Order</button>
+    <button id="btnDeleteAllProducts">Delete product</button>
+    <button id="btnFinallyOrder">Finally Order</button>
 </div>
+
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/js/deleteProduct.js"></script>
+<script src="/js/cart.js"></script>
 

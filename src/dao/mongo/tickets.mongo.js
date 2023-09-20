@@ -5,6 +5,7 @@ export default class Tickets {
     constructor() {
         logger.info('Working tickets with DB');
     }
+
     save = async (ticket) => {
         return await ticketModel.create(ticket);
     }

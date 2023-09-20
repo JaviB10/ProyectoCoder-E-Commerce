@@ -13,7 +13,7 @@ describe("Testing de products", () => {
             password: 'topgun22'
         };
 
-        const loginResult = await requester.post('/api/users/login').send(credentialsMock);
+        const loginResult = await requester.post('/api/sessions/login').send(credentialsMock);
         const cookieResult = loginResult.headers['set-cookie'][0];
         const cookieResultSplit = cookieResult.split('=');
 

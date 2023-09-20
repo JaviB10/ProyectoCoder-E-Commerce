@@ -1,26 +1,38 @@
-<h1>Subir Archivos</h1>
-<form id="form3" action="/api/users/{{ uid }}/documents" method="POST" enctype="multipart/form-data">
-        <label for="profiles">Imagen de Perfil:</label>
-        <input type="file" class="documentBtn" name="profiles">
+<h1 id="userInfo" data-uid="{{ this.user._id }}">Profile</h1>
+        <ul>
+                <li>Name: {{this.user.name}}</li> 
+                <li>Email: {{this.user.email}}</li>
+                <li>Age: {{this.user.age}}</li>
+                <li>Phone: {{this.user.phone}}</li>
+                <li>Role: {{this.user.role}}</li>
+        </ul>
+
+<h1>Upload Documents</h1>
+
+<form id="formUploader" action="/api/users/{{ this.user._id }}/documents" method="POST" enctype="multipart/form-data">
+
+        <label for="profile">Profile image:</label>
+        <input type="file" class="documentBtn" name="profile">
         <br>
-        <label for="products">Imagen de Producto:</label>
-        <input type="file" class="documentBtn" name="products">
-        <br>
-        <label for="identificacion">Identificación:</label>
-        <input type="file" class="documentBtn" name="identificacion" accept=".pdf, .jpg, .png">
+        
+        <label for="product">Product image:</label>
+        <input type="file" class="documentBtn" name="product">
         <br>
 
-        <label for="domicilio">Comprobante de domicilio:</label>
-        <input type="file" class="documentBtn" name="domicilio" accept=".pdf, .jpg, .png">
+        <label for="idCard">ID Card:</label>
+        <input type="file" class="documentBtn" name="idCard" accept=".pdf, .jpg, .png">
         <br>
 
-        <label for="estadoCuenta">Comprobante de estado de cuenta:</label>
-        <input type="file" class="documentBtn" name="estadoCuenta" accept=".pdf, .jpg, .png">
+        <label for="address">Proof of address:</label>
+        <input type="file" class="documentBtn" name="address" accept=".pdf, .jpg, .png">
         <br>
 
-        <button type="submit">Subir Archivos</button>
+        <label for="accountStatus">Bank statement:</label>
+        <input type="file" class="documentBtn" name="accountStatus" accept=".pdf, .jpg, .png">
+        <br>
+
+        <button type="submit">Upload Files</button>
 </form>
 
-<div id="userInfo" data-uid="{{ uid }}"></div>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/js/uploader.js"></script> 
+<script src="/js/viewProfile.js"></script> 

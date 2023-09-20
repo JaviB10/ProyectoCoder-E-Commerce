@@ -10,10 +10,6 @@ export default class Users {
         return await userModel.find().lean();
     }
 
-    getAllPaginate = async (limit, page) => {
-        return await userModel.paginate({}, { limit, page, lean: true})
-    }
-
     getUserById = async (uid) => {
         return await userModel.findOne({_id:uid}).lean();
     }

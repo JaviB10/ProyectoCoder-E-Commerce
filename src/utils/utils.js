@@ -58,22 +58,20 @@ export default __mainDirname;
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log(file.fieldname);
         switch (file.fieldname) {
-            case "profiles":
-                console.log("entra aca");
+            case "profile":
                 cb(null, `${__mainDirname}/public/files/profiles`);
                 break;
-            case "products":
+            case "product":
                 cb(null, `${__mainDirname}/public/files/products`);
                 break;
-            case "identificacion":
+            case "idCard":
                 cb(null, `${__mainDirname}/public/files/documents`);
                 break;    
-            case "domicilio":
+            case "address":
                 cb(null, `${__mainDirname}/public/files/documents`);
                 break;   
-            case "estadoCuenta":
+            case "accountStatus":
                 cb(null, `${__mainDirname}/public/files/documents`);
                 break;    
             default:
