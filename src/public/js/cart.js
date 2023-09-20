@@ -8,7 +8,7 @@ for (let i = 0; i < deleteProductBtn.length; i++) {
     const deleteProduct = deleteProductBtn[i];
     deleteProduct.addEventListener(`click`, () => {
         const pid = deleteProduct.dataset.pid; 
-        fetch(`http://localhost:8081/api/carts/${cid}/product/${pid}`, {
+        fetch(`/api/carts/${cid}/product/${pid}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json"
@@ -34,7 +34,7 @@ for (let i = 0; i < deleteProductBtn.length; i++) {
 }
 
 deleteAll.addEventListener(`click`, () => {
-    fetch(`http://localhost:8081/api/carts/${cid}`, {
+    fetch(`/api/carts/${cid}`, {
     method: "DELETE",
     headers: {
         "Content-Type": "application/json"
@@ -74,8 +74,7 @@ deleteAll.addEventListener(`click`, () => {
 
 finallyOrder.addEventListener(`click`, () => {
     // Realizar la solicitud POST aquí
-    const url = `http://localhost:8081/api/carts/${cid}/purchase`;
-    fetch(url, {
+    fetch(`/api/carts/${cid}/purchase`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"

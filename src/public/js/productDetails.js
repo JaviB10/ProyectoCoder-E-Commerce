@@ -5,7 +5,7 @@ const cid = user.dataset.cid;
 
 postButtons.addEventListener(`click`, () => {
     const pid = postButtons.dataset.pid; 
-    fetch(`http://localhost:8081/api/carts/${cid}/product/${pid}`, {
+    fetch(`/api/carts/${cid}/product/${pid}`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
@@ -41,7 +41,7 @@ postButtons.addEventListener(`click`, () => {
 
 deleteButton.addEventListener(`click`, () => {
     const pid = deleteButton.dataset.pid; 
-    fetch(`http://localhost:8081/api/products/${pid}`, {
+    fetch(`/api/products/${pid}`, {
     method: "DELETE",
     headers: {
         "Content-Type": "application/json"
