@@ -46,6 +46,9 @@ const deleteOneUser = async (req, res) => {
         if (error instanceof UserNotFound) {
             return res.sendClientError(error.message);
         }
+        if (error instanceof CantDeleteUser) {
+            return res.sendClientError(error.message);
+        }
         res.sendServerError(error.message);
     }
 }

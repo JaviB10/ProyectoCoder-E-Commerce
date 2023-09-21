@@ -69,6 +69,9 @@ const updateUserService = async (cid, product) => {
 }
 
 const deleteOneUserService = async (uid, user) => {
+    if (user.role === 'ADMIN' && user._id.equals(uid)) {
+        throw new CantDeleteUser('You cannot delete yourself')
+    }
     await cartsRepository.deleteOneCartRepository(user.cart._id)
     const result = await usersRepository.deleteUserRepository(uid)
     return result
@@ -82,10 +85,6 @@ const deleteAllUsersService = async (users) => {
     const inactivePeriodInMilliseconds = days * millisecondsInADay;
 
     for (const user of users) {
-
-        if (user.role === 'ADMIN') {
-            throw new CantDeleteUser('The user has a role as ADMIN')
-        }
 
         const difference = currentDate - user.last_connection;
         // Comprobar si han pasado al menos 2 días desde la fecha actual

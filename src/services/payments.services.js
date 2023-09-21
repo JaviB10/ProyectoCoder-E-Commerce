@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 export default class PaymentsService {
     constructor() {
-        this.stripe = new Stripe('sk_test_51NsbFgFfS7UCeYZIKxAUwtwNzMeV9i8KduP2tVzp8Qx7MKm94xGbWrBaubk4x13jcKzwhx4fc3X5uA04RIOFxgHg00QgyZPJlP');
+        this.stripe = new Stripe('sk_test_51NsZAUJPsB84nJYMRlmbNVXkxM2EW29R316YPmeA6ID7rfV9oDjXGAez2qKCSBcGuBKaJ0Wn9EtrVKUVy6MAXhym00PcrnBZnG');
     }
 
     paymentsProductsService = async (ticket) => {

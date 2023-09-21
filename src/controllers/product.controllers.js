@@ -58,7 +58,6 @@ const saveProduct = async (req, res) => {
     try {
         const product = req.body;
         const result = await saveProductService(product, req.user);
-        console.log(result);
         res.sendSuccess(result)
     } catch (error) {
         if (error instanceof IncompleteValues) {

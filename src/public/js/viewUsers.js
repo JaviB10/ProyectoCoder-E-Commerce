@@ -95,7 +95,7 @@ for (let i = 0; i < deleteUserBtn.length; i++) {
                     showConfirmButton: false,
                     timer: 3000,
                     title: "¡Error!",
-                    text: "An error occurred while processing the request.",
+                    text: "You cannot delete yourself.",
                     icon: "error"
                 });
             }
@@ -128,17 +128,7 @@ deleteAll.addEventListener(`click`, () => {
         } 
         if (result.status === 400) {
             result.json().then(data => {
-                if (data.error === 'The user has a role as ADMIN') {
-                    Swal.fire({
-                        toast: true,
-                        position: "top-end",
-                        showConfirmButton: false,
-                        timer: 3000,
-                        title: "¡Error!",
-                        text: "The user is an administrator and cannot change their role",
-                        icon: "error"
-                    });
-                } else {
+                if (data.error === 'The user hasnt been without connection for 2 days') {
                     Swal.fire({
                         toast: true,
                         position: "top-end",
