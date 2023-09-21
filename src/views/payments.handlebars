@@ -1,6 +1,26 @@
 <div>
 
-    <h1>ORDEN GENERADA</h1>
+    <h1>ORDER GENERATED</h1>
     
+    <h2>The order was completed successfully</h2>
+
+    <p>You have purchased the following products: </p>
+
+    {{#each this.products}}
+        <ul>
+            <li>Title: {{this.product.title}}</li> 
+            <li>Price: {{this.product.price}}</li> 
+            <li>Quantity: {{this.quantity}}</li> 
+        </ul>
+    {{/each}}
+
+    <p>Your purchase ticket has been generated: </p>
+    <ul>
+        <li>Code: {{this.ticket.code}}</li> 
+        <li>Amount: {{this.ticket.amount}}</li> 
+        <li>Purchaser: {{this.ticket.purchaser}}</li> 
+    </ul>
+
+
 </div>
 

@@ -91,6 +91,7 @@ finallyOrder.addEventListener(`click`, () => {
                 text: "The order was completed successfully.",
                 icon: "succeess"
             });
+            setTimeout(()=>{window.location.replace('/payments');},1000)
         } else if (result.status === 400) {
             result.json().then(data => {
                 if (data.error === 'The cart has no products') {

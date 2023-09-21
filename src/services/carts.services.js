@@ -123,14 +123,12 @@ const purchaseCartService = async (user, cart) => {
     const produ = {products: productsSinStock};
     await cartsRepository.updateCartRepository(cart._id, produ);
 
-    console.log(ticket);
     if (productsConStock.length === 0) {
         throw new OutStockProduct('the product is out of stock at the moment')
     } else {
         await ticketsRepository.saveTicketRepository(ticket);
         const result = await paymentService.paymentsProductsService(ticket)
-        console.log(result);
-        return ({ticket: result , productOut: productsSinStock});
+        return ({ticket: ticket , productOut: productsSinStock, products: productsConStock, payments: result});
     }
     
 }

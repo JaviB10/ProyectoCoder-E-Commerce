@@ -113,12 +113,14 @@ const deleteAllProduct = async (req, res) => {
     }
 }
 
+let purchaseResult = null; // Variable de nivel superior
+
 const purchaseCart = async (req,res) => {
     try {
         const cartID = req.params.cid;
         const cart = await getCartByIdService(cartID)
-        const result = await purchaseCartService(req.user, cart);
-        res.render("payments", result) 
+        purchaseResult = await purchaseCartService(req.user, cart);
+        res.sendSuccess(purchaseResult)
     } catch (error) {
         if (error instanceof CartNotFound) {
             return res.sendClientError(error.message);
@@ -133,6 +135,14 @@ const purchaseCart = async (req,res) => {
     }
 }
 
+const getPayments = async (req,res) => {
+    try {
+        res.render("payments", purchaseResult);
+    } catch (error) {
+        res.sendServerError(error.message);
+    }
+}
+
 export {
     getCartById,
     addProductToCart,
@@ -140,5 +150,6 @@ export {
     updateQuantity,
     deleteProduct,
     deleteAllProduct,
-    purchaseCart
+    purchaseCart,
+    getPayments
 }

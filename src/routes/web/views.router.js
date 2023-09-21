@@ -15,7 +15,10 @@ import {
     getPasswordReset, 
     getRegister 
 } from "../../controllers/sessions.controllers.js";
-import { getCartById } from "../../controllers/carts.controllers.js";
+import { 
+    getCartById, 
+    getPayments 
+} from "../../controllers/carts.controllers.js";
 
 export default class ViewsRouter extends Router {
     init() {
@@ -31,6 +34,7 @@ export default class ViewsRouter extends Router {
         this.get("/newProduct", ["ADMIN", "PREMIUM"], passportStrategiesEnum.JWT, getNewProduct);
         //view cart
         this.get("/carts/:cid", ["ADMIN", "PREMIUM", "USER"], passportStrategiesEnum.JWT, getCartById);
+        this.get("/payments", ["ADMIN", "PREMIUM", "USER"], passportStrategiesEnum.JWT, getPayments)
         //view users
         this.get("/viewProfile", ["ADMIN", "PREMIUM", "USER"], passportStrategiesEnum.JWT, getViewProfile)
         this.get("/viewUsers", ["ADMIN"], passportStrategiesEnum.JWT, getUser)
