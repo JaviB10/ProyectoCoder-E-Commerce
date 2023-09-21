@@ -129,6 +129,7 @@ const purchaseCartService = async (user, cart) => {
     } else {
         await ticketsRepository.saveTicketRepository(ticket);
         const result = await paymentService.paymentsProductsService(ticket)
+        console.log(result);
         return ({ticket: result , productOut: productsSinStock});
     }
     

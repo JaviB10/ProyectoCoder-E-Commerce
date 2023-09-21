@@ -76,8 +76,11 @@ const deleteOneUserService = async (uid, user) => {
 
 const deleteAllUsersService = async (users) => {
     const currentDate = new Date();
-    // Definir la cantidad de milisegundos en 2 días
-    const inactivePeriodInMilliseconds  = 30 * 60 * 1000;
+    const millisecondsInADay = 24 * 60 * 60 * 1000; // Milisegundos en un día
+    const days = 2; // Cambia esto según la cantidad de días que desees
+
+    const inactivePeriodInMilliseconds = days * millisecondsInADay;
+
     for (const user of users) {
 
         if (user.role === 'ADMIN') {

@@ -118,7 +118,7 @@ const purchaseCart = async (req,res) => {
         const cartID = req.params.cid;
         const cart = await getCartByIdService(cartID)
         const result = await purchaseCartService(req.user, cart);
-        res.sendSuccess(result);   
+        res.render("payments", result) 
     } catch (error) {
         if (error instanceof CartNotFound) {
             return res.sendClientError(error.message);
